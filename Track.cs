@@ -533,6 +533,7 @@ namespace PersistentTrails
                 position = referenceBody.GetWorldSurfacePosition(waypoints.First().latitude, waypoints.First().longitude, waypoints.First().altitude);
                 orientation = waypoints.First().orientation;
                 velocity = waypoints.First().velocity;
+                return;
             }
 
             if (ut >= waypoints.Last().recordTime)
@@ -540,11 +541,12 @@ namespace PersistentTrails
                 position = referenceBody.GetWorldSurfacePosition(waypoints.Last().latitude, waypoints.Last().longitude, waypoints.Last().altitude);
                 orientation = waypoints.Last().orientation;
                 velocity = waypoints.Last().velocity;
+                return;
             }
-
 
             for (int i = 0; i < waypoints.Count-1; ++i)
             {
+                
                 //find out how much relPos is covered by this segment
                 //Vector3 segment = end - start;
 
@@ -564,7 +566,7 @@ namespace PersistentTrails
                     position = Vector3.Lerp(start, end, progress);
                     orientation = Quaternion.Lerp(waypoints[i].orientation, waypoints[i + 1].orientation, progress); //Lerp is faster, maybe use the more accurate Slerp for better results?
                     velocity = Vector3.Lerp(waypoints[i].velocity, waypoints[i + 1].velocity, progress); //Lerp is faster, maybe use the more accurate Slerp for better results?
-
+                    return;
                 }
             }
         }

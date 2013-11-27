@@ -87,16 +87,22 @@ namespace PersistentTrails
         Texture2D ffTex;
         Texture2D stopTex;
 
-        public ReplayWindow(Track track)
-            : base("Replay Track: " + track.TrackName)
-        {
+        public ReplayWindow(Track track) : base("Replay Track: " + track.TrackName) {
             Mesh sphere = MeshFactory.createSphere();
             bool loadCraft = true;
             if (loadCraft)
             {
-                ghost = CraftLoader.assembleCraft(Utilities.CraftPath + track.VesselName + ".crf");
+                try
+                {
+                    ghost = CraftLoader.assembleCraft(Utilities.CraftPath + track.VesselName + ".crf"); // --- add the craft file listed in the path, or selected from a menu ---
+                }
+                catch
+                {
+                    loadCraft = false;
+                }
             }
-            else
+            
+            if (!loadCraft)
             {
                 ghost = MeshFactory.makeMeshGameObject(ref sphere, "Track playback sphere");
                 ghost.transform.localScale = new Vector3(track.ConeRadiusToLineWidthFactor * track.LineWidth, track.ConeRadiusToLineWidthFactor * track.LineWidth, track.ConeRadiusToLineWidthFactor * track.LineWidth);

@@ -3,7 +3,7 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Express 2012 for Windows Desktop
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PersistentTrails", "PersistentTrails.csproj", "{C6AB28FB-7FB1-4C7A-9ED8-7AFA199A3C9C}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FSflightPath", "..\FSflightPath\FSflightPath\FSflightPath.csproj", "{0273F485-2228-4D73-B014-2D047D4D0557}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FSflightPath", "..\FSflightPath\FSflightPath\FSflightPath\FSflightPath.csproj", "{0273F485-2228-4D73-B014-2D047D4D0557}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

@@ -75,11 +75,19 @@ namespace PersistentTrails
 
         public ReplayWindow(Track track) : base("Replay Track: " + track.Name) {
             Mesh sphere = MeshFactory.createSphere();
-            ghost = MeshFactory.makeMeshGameObject(ref sphere, "Track playback sphere");
-            ghost.transform.localScale = new Vector3(track.ConeRadiusToLineWidthFactor * track.LineWidth, track.ConeRadiusToLineWidthFactor * track.LineWidth, track.ConeRadiusToLineWidthFactor * track.LineWidth);
-            //ghost.collider.enabled = false;
-            ghost.renderer.material = new Material(Shader.Find("KSP/Emissive/Diffuse"));
-            ghost.renderer.material.SetColor("_EmissiveColor", track.LineColor);
+            bool loadCraft = true;
+            if (loadCraft)
+            {
+                ghost = CraftLoader.assembleCraft("haha"); // --- add the craft file listed in the path, or selected from a menu ---
+            }
+            else
+            {
+                ghost = MeshFactory.makeMeshGameObject(ref sphere, "Track playback sphere");
+                ghost.transform.localScale = new Vector3(track.ConeRadiusToLineWidthFactor * track.LineWidth, track.ConeRadiusToLineWidthFactor * track.LineWidth, track.ConeRadiusToLineWidthFactor * track.LineWidth);
+                //ghost.collider.enabled = false;
+                ghost.renderer.material = new Material(Shader.Find("KSP/Emissive/Diffuse"));
+                ghost.renderer.material.SetColor("_EmissiveColor", track.LineColor);
+            }
 
             behaviour = ghost.AddComponent<ReplayBehaviour>();
             behaviour.initialize(track, ghost);

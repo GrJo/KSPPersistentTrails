@@ -49,6 +49,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="ColorPicker.cs" />
+    <Compile Include="CraftLoader.cs" />
     <Compile Include="MeshFactory.cs" />
     <Compile Include="LogEntryWindow.cs" />
     <Compile Include="MainWindow.cs" />
@@ -63,8 +64,8 @@
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
-    <PostBuildEvent>copy "C:\Users\Gregor\Documents\GitHub\KSPPersistentTrails\bin\Release\PersistentTrails.dll" "C:\Spiele\KSP 0.22 DEV\GameData\PersistentTrails"
-copy "C:\Users\Gregor\Documents\GitHub\KSPPersistentTrails\PluginData" "C:\Spiele\KSP 0.22 DEV\GameData\PersistentTrails\PluginData"</PostBuildEvent>
+    <PostBuildEvent>
+    </PostBuildEvent>
   </PropertyGroup>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

@@ -37,6 +37,8 @@ namespace PersistentTrails
         public static String AppPath = KSPUtil.ApplicationRootPath.Replace("\\", "/");
         public static String PlugInDataPath = AppPath + "GameData/PersistentTrails/PluginData/";
         public static String TrackPath = PlugInDataPath + "Tracks/";
+        public static int craftFileFormat = 1;
+        public static int trackFileFormat = 1;
         //public static Vector2 DebugScrollPosition = Vector2.zero;
 
         //creates a unique track name

@@ -92,9 +92,17 @@ namespace PersistentTrails
             bool loadCraft = true;
             if (loadCraft)
             {
-                ghost = CraftLoader.assembleCraft(Utilities.CraftPath + "beech.crf"); // --- add the craft file listed in the path, or selected from a menu ---
+                try
+                {
+                    ghost = CraftLoader.assembleCraft(Utilities.CraftPath + "beech.crf"); // --- add the craft file listed in the path, or selected from a menu ---
+                }
+                catch
+                {
+                    loadCraft = false;
+                }
             }
-            else
+            
+            if (!loadCraft)
             {
                 ghost = MeshFactory.makeMeshGameObject(ref sphere, "Track playback sphere");
                 ghost.transform.localScale = new Vector3(track.ConeRadiusToLineWidthFactor * track.LineWidth, track.ConeRadiusToLineWidthFactor * track.LineWidth, track.ConeRadiusToLineWidthFactor * track.LineWidth);

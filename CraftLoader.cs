@@ -102,8 +102,16 @@ namespace PersistentTrails
         {
             GameObject craft = new GameObject();
             Debug.Log("asembling craft " + craftName);
+            List<PartValue> pvList;
             //List<PartValue> pvList = getParts(FlightGlobals.ActiveVessel, true); // load the craft file here into a partValue list
-            List<PartValue> pvList = loadCraftFromFile(craftName); // ---- test! ----
+            try
+            {
+                pvList = loadCraftFromFile(craftName);
+            }
+            catch
+            {
+                throw new FileNotFoundException("error loading craft from file", craftName);
+            }
             foreach (PartValue pv in pvList)
             {
                 Debug.Log("pv.name is " + pv.partName);

@@ -10,7 +10,7 @@ namespace PersistentTrails
 {
     public static class CraftLoader
     {
-        public static List<PartValue> getParts(Vessel vessel)
+        public static List<PartValue> getParts(Vessel vessel, bool fetchModel)
         {
             List<PartValue> partList = new List<PartValue>();
             Vector3 rootPosition;
@@ -37,7 +37,7 @@ namespace PersistentTrails
                         newPartValue.position = localTransform.localPosition;
                         newPartValue.rotation = localTransform.localRotation;
                         newPartValue.partName = part.name.Split(' ')[0];
-                        newPartValue.model = findPartModel(newPartValue.partName).model;
+                        if (fetchModel) newPartValue.model = findPartModel(newPartValue.partName);
                         partList.Add(newPartValue);
                     }
                     Debug.Log("partList count: " + partList.Count);
@@ -46,31 +46,61 @@ namespace PersistentTrails
             return partList;
         }
 
-        public string serialize()
+        private static string serialize()
         {
-            string output = Utilities.craftFileFormat.ToString();
-
+            string output = String.Concat(Utilities.craftFileFormat, "\n");
+            foreach (PartValue value in getParts(FlightGlobals.ActiveVessel, false))
+            {
+                output = String.Concat(output, value.partName, "\n");
+                output = String.Concat(output, value.position, "\n");
+                output = String.Concat(output, value.rotation, "\n");
+                output = String.Concat(output, value.scale, "\n");
+            }
+            output = String.Concat(output, "[EOF]");
             return output;
-        }
+        }        
 
-        public void saveCraftToFile()
+        public static void saveCraftToFile()
         {
-            StreamWriter stream = new StreamWriter(Utilities.AppPath + "/craft/" + FlightGlobals.ActiveVessel.vesselName + ".crf");
+            StreamWriter stream = new StreamWriter(Utilities.CraftPath + FlightGlobals.ActiveVessel.vesselName + ".crf");
             stream.WriteLine(serialize());
             stream.Close(); 
         }
 
-        public List<PartValue> loadCraftFromFile()
+        public static List<PartValue> loadCraftFromFile(string fileName)
         {
             List<PartValue> loadedList = new List<PartValue>();
-            // parse text file
+            PartValue newValue = new PartValue();
+            StreamReader stream = new StreamReader(fileName);
+            string newLine = string.Empty;
+            int craftFileFormat = 0;
+            int.TryParse(stream.ReadLine(), out craftFileFormat);
+            Debug.Log(String.Concat("Loading crf file, format ", craftFileFormat, ", ", fileName));
+            try
+            {
+                while (!stream.EndOfStream && !(newLine == "[EOF]"))
+                {
+                    newLine = stream.ReadLine();
+                    newValue.partName = newLine;                    
+                    newValue.position = Utilities.parseVector3(stream.ReadLine());
+                    newValue.rotation = Utilities.parseQuaternion(stream.ReadLine());
+                    float.TryParse(stream.ReadLine(), out newValue.scale);
+                    newValue.model = findPartModel(newValue.partName);
+                    loadedList.Add(newValue.clone());
+                }                
+            }
+            catch (Exception e)
+            {
+                Debug.Log("load craft file error: " + e.ToString());
+            }
             return loadedList;
         }
 
         public static GameObject assembleCraft(string craftName) // --- craftName not actually used yet. This should take a saved craft file name as input ---
         {
             GameObject craft = new GameObject();
-            List<PartValue> pvList = getParts(FlightGlobals.ActiveVessel); // load the craft file here into a partValue list
+            //List<PartValue> pvList = getParts(FlightGlobals.ActiveVessel, true); // load the craft file here into a partValue list
+            List<PartValue> pvList = loadCraftFromFile(Utilities.CraftPath + "beech.crf"); // ---- test! ----
             foreach (PartValue pv in pvList)
             {                
                 pv.model.SetActive(true);
@@ -87,7 +117,7 @@ namespace PersistentTrails
             return craft;
         }
 
-        public static PartValue findPartModel(string partName)
+        public static GameObject findPartModel(string partName)
         {
             UrlDir.UrlConfig[] cfg = GameDatabase.Instance.GetConfigs("PART");
             //Debug.Log("looping through " + cfg.Length);
@@ -96,8 +126,8 @@ namespace PersistentTrails
                 if (partName == cfg[i].name)
                 {
                     //Debug.Log("found this part: " + cfg[i].url);
-                    float scale = 0.1337f;
-                    float.TryParse(cfg[i].config.GetValue("scale"), out scale);
+                    //float scale = 0.1337f;
+                    //float.TryParse(cfg[i].config.GetValue("scale"), out scale);
                     //Debug.Log("scale: " + scale);
                     string modelPath = cfg[i].parent.parent.url + "/" + "model";
                     //Debug.Log("model path: " + modelPath);
@@ -106,17 +136,18 @@ namespace PersistentTrails
                     {
                         //Debug.Log("model load error, fetching first model available");
                         newModel = GameDatabase.Instance.GetModelIn(cfg[i].parent.parent.url);
-                        return new PartValue(newModel, scale);
+                        return newModel;
+                        //return new PartValue(newModel, scale);
                     }
                     else
                     {
                         //Debug.Log("newModel not null");
-                        return new PartValue(newModel, scale);
+                        return newModel;
                     }
                 }
             }
             Debug.Log("Finding model " + partName + " failed, returning blank GameObject");
-            return new PartValue(new GameObject(), 1f);
+            return new GameObject();
         }
     }  
 
@@ -137,6 +168,16 @@ namespace PersistentTrails
 
         public PartValue()
         {
+        }
+
+        public PartValue clone()
+        {
+            PartValue cloneValue = new PartValue();
+            cloneValue.partName = partName;
+            cloneValue.position = position;
+            cloneValue.rotation = rotation;
+            cloneValue.scale = scale;
+            return cloneValue;
         }
     }
 }

@@ -37,6 +37,7 @@ namespace PersistentTrails
         public static String AppPath = KSPUtil.ApplicationRootPath.Replace("\\", "/");
         public static String PlugInDataPath = AppPath + "GameData/PersistentTrails/PluginData/";
         public static String TrackPath = PlugInDataPath + "Tracks/";
+        public static String CraftPath = PlugInDataPath + "Craft/";
         public static int craftFileFormat = 1;
         public static int trackFileFormat = 1;
         //public static Vector2 DebugScrollPosition = Vector2.zero;
@@ -278,6 +279,22 @@ namespace PersistentTrails
             return result;
         }
 
+        public static Vector3 parseVector3(string inString)
+        {            
+            string[] floatStrings = inString.Split(';');            
+            Vector3 result = Vector3.zero;
+            if (floatStrings.Length == 3)
+            {                
+                float.TryParse(floatStrings[0], out result.x);
+                float.TryParse(floatStrings[1], out result.y);
+                float.TryParse(floatStrings[2], out result.z);
+            }
+            else
+            {
+                Debug.Log("Couldn't parse " + inString + " to Vector3");
+            }            
+            return result;
+        }        
 
     }
 

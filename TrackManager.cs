@@ -129,6 +129,10 @@ namespace PersistentTrails
             //    ShouldBeInPostDrawQueue = false;
             //}
             TireRecorder.Instance.update();
+
+            // --- TEST CRAFT SERIALIZE ---
+            if (Input.GetKeyDown(KeyCode.F8))
+                CraftLoader.saveCraftToFile();
         }
 
         public void DrawGUI()

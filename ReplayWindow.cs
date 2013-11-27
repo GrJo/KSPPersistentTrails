@@ -92,7 +92,7 @@ namespace PersistentTrails
             bool loadCraft = true;
             if (loadCraft)
             {
-                ghost = CraftLoader.assembleCraft("haha"); // --- add the craft file listed in the path, or selected from a menu ---
+                ghost = CraftLoader.assembleCraft(Utilities.CraftPath + "beech.crf"); // --- add the craft file listed in the path, or selected from a menu ---
             }
             else
             {

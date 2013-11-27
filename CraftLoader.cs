@@ -44,7 +44,7 @@ namespace PersistentTrails
                 }
             }
             return partList;
-        }
+        }        
 
         private static string serialize()
         {
@@ -52,8 +52,8 @@ namespace PersistentTrails
             foreach (PartValue value in getParts(FlightGlobals.ActiveVessel, false))
             {
                 output = String.Concat(output, value.partName, "\n");
-                output = String.Concat(output, value.position, "\n");
-                output = String.Concat(output, value.rotation, "\n");
+                output = String.Concat(output, Utilities.Vector3ToString(value.position), "\n");
+                output = String.Concat(output, Utilities.QuaternionToString(value.rotation), "\n");
                 output = String.Concat(output, value.scale, "\n");
             }
             output = String.Concat(output, "[EOF]");
@@ -85,7 +85,9 @@ namespace PersistentTrails
                     newValue.position = Utilities.parseVector3(stream.ReadLine());
                     newValue.rotation = Utilities.parseQuaternion(stream.ReadLine());
                     float.TryParse(stream.ReadLine(), out newValue.scale);
+                    Debug.Log("finding model " + newValue.partName);
                     newValue.model = findPartModel(newValue.partName);
+                    Debug.Log("model null? " + (newValue.model == null));
                     loadedList.Add(newValue.clone());
                 }                
             }
@@ -99,15 +101,19 @@ namespace PersistentTrails
         public static GameObject assembleCraft(string craftName) // --- craftName not actually used yet. This should take a saved craft file name as input ---
         {
             GameObject craft = new GameObject();
+            Debug.Log("asembling craft " + craftName);
             //List<PartValue> pvList = getParts(FlightGlobals.ActiveVessel, true); // load the craft file here into a partValue list
-            List<PartValue> pvList = loadCraftFromFile(Utilities.CraftPath + "beech.crf"); // ---- test! ----
+            List<PartValue> pvList = loadCraftFromFile(craftName); // ---- test! ----
             foreach (PartValue pv in pvList)
-            {                
+            {
+                Debug.Log("pv.name is " + pv.partName);
                 pv.model.SetActive(true);
+                Debug.Log("pv.model exists");
                 pv.model.transform.parent = craft.transform;
                 pv.model.transform.localPosition = pv.position;
                 pv.model.transform.localRotation = pv.rotation;
-                if (pv.scale > 10f) pv.scale /= 100f;
+                if (pv.scale > 7f) pv.scale /= 10f;
+                if (pv.scale > 7f) pv.scale /= 10f; // twice to catch both 0.01 scale parts, and 0.1 scales. Gotta find a better way. Need to read the part cfg scale
                 pv.model.transform.localScale = new Vector3(pv.scale, pv.scale, pv.scale);
                 Debug.Log("Part: " + pv.partName + "Scale: " + pv.scale + "/" + pv.model.transform.localScale);
                 //Debug.Log("Part: " + pv.position);
@@ -177,6 +183,7 @@ namespace PersistentTrails
             cloneValue.position = position;
             cloneValue.rotation = rotation;
             cloneValue.scale = scale;
+            cloneValue.model = model;
             return cloneValue;
         }
     }

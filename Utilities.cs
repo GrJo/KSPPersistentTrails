@@ -294,7 +294,17 @@ namespace PersistentTrails
                 Debug.Log("Couldn't parse " + inString + " to Vector3");
             }            
             return result;
-        }        
+        }
+
+        public static string Vector3ToString(Vector3 inValue)
+        {
+            return (String.Concat(inValue.x.ToString(), ";", inValue.y.ToString(), ";", inValue.z.ToString()));
+        }
+
+        public static string QuaternionToString(Quaternion inValue)
+        {
+            return (String.Concat(inValue.x.ToString(), ";", inValue.y.ToString(), ";", inValue.z.ToString(), ";", inValue.w.ToString()));
+        }
 
     }
 

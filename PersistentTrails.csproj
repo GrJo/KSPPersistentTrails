@@ -53,24 +53,18 @@
     <Compile Include="LogEntryWindow.cs" />
     <Compile Include="MainWindow.cs" />
     <Compile Include="ReplayWindow.cs" />
-    <Compile Include="TacWindowTest.cs" />
     <Compile Include="TireTracker.cs" />
     <Compile Include="Track.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="TrackEditWindow.cs" />
     <Compile Include="TrackManager.cs" />
     <Compile Include="Utilities.cs" />
-    <Compile Include="Utils.cs" />
     <Compile Include="Window.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
-    <PostBuildEvent>copy "C:\Users\Gregor\Documents\Visual Studio 2012\Projects\KSPRoverTracks\KSPRoverTracks\bin\Release\PersistentTrails.dll" "C:\Spiele\KSP 0.21.1 DEV\GameData\PersistentTrails"
-
-copy "C:\Users\Gregor\Documents\Visual Studio 2012\Projects\KSPRoverTracks\KSPRoverTracks\bin\Release\PersistentTrails.dll" "C:\Spiele\KSP 0.21.1 DEVTEST\GameData\PersistentTrails"
-
-copy "C:\Users\Gregor\Documents\Visual Studio 2012\Projects\KSPRoverTracks\KSPRoverTracks\bin\Release\PersistentTrails.dll" "C:\Spiele\KSP 0.21\GameData\PersistentTrails"
-</PostBuildEvent>
+    <PostBuildEvent>copy "C:\Users\Gregor\Documents\GitHub\KSPPersistentTrails\bin\Release\PersistentTrails.dll" "C:\Spiele\KSP 0.22 DEV\GameData\PersistentTrails"
+copy "C:\Users\Gregor\Documents\GitHub\KSPPersistentTrails\PluginData" "C:\Spiele\KSP 0.22 DEV\GameData\PersistentTrails\PluginData"</PostBuildEvent>
   </PropertyGroup>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

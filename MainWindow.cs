@@ -33,7 +33,7 @@ namespace PersistentTrails
         //private Vector2 scroll = new Vector2();
         //private KeyBind captureTarget;
 
-        public MainWindow(ExplorerTrackBehaviour mainBehaviour) : base("Persistent Trails " + Resources.VERSION) {
+        public MainWindow(ExplorerTrackBehaviour mainBehaviour) : base("Persistent Trails " + GUIResources.VERSION) {
             this.mainBehaviour = mainBehaviour;    
             SetResizeX(true);
             SetResizeY(true);
@@ -65,7 +65,7 @@ namespace PersistentTrails
 
         protected override void DrawWindowContents(int windowID)
         {
-            Resources.SetupGUI();
+            GUIResources.SetupGUI();
 
             GUILayout.BeginVertical(); // BEGIN outer container
             GUILayout.BeginHorizontal();
@@ -106,23 +106,23 @@ namespace PersistentTrails
             GUILayout.EndHorizontal();
 
             GUILayout.BeginHorizontal();
-            if (GUILayout.Button("0.2s", (mainBehaviour.RecordingInterval == 0.2f) ? Resources.ButtonToggledStyle : Resources.ButtonStyle))
+            if (GUILayout.Button("0.2s", (mainBehaviour.RecordingInterval == 0.2f) ? GUIResources.ButtonToggledStyle : GUIResources.ButtonStyle))
             {
                 mainBehaviour.RecordingInterval = 0.2f;
             }
-            if (GUILayout.Button("1s", (mainBehaviour.RecordingInterval == 1) ? Resources.ButtonToggledStyle : Resources.ButtonStyle))
+            if (GUILayout.Button("1s", (mainBehaviour.RecordingInterval == 1) ? GUIResources.ButtonToggledStyle : GUIResources.ButtonStyle))
             {
                 mainBehaviour.RecordingInterval = 1.0f;
             }
-            if (GUILayout.Button("2s", (mainBehaviour.RecordingInterval == 2) ? Resources.ButtonToggledStyle : Resources.ButtonStyle))
+            if (GUILayout.Button("2s", (mainBehaviour.RecordingInterval == 2) ? GUIResources.ButtonToggledStyle : GUIResources.ButtonStyle))
             {
                 mainBehaviour.RecordingInterval = 2.0f;
             }
-            if (GUILayout.Button("5s", (mainBehaviour.RecordingInterval == 5) ? Resources.ButtonToggledStyle : Resources.ButtonStyle))
+            if (GUILayout.Button("5s", (mainBehaviour.RecordingInterval == 5) ? GUIResources.ButtonToggledStyle : GUIResources.ButtonStyle))
             {
                 mainBehaviour.RecordingInterval = 5.0f;
             }
-            if (GUILayout.Button("60s", (mainBehaviour.RecordingInterval == 60) ? Resources.ButtonToggledStyle : Resources.ButtonStyle))
+            if (GUILayout.Button("60s", (mainBehaviour.RecordingInterval == 60) ? GUIResources.ButtonToggledStyle : GUIResources.ButtonStyle))
             {
                 mainBehaviour.RecordingInterval = 60.0f;
             }
@@ -157,7 +157,7 @@ namespace PersistentTrails
                 //GUIStyle trackColorFontStyle = new GUIStyle();
                 //trackColorFontStyle.normal.textColor = track.LineColor;
 
-                GUILayout.Label(TrackManager.Instance.allTracks.ElementAt(i).Name, Resources.LabelStyle, GUILayout.ExpandWidth(true), GUILayout.Height(26));
+                GUILayout.Label(TrackManager.Instance.allTracks.ElementAt(i).Name, GUIResources.LabelStyle, GUILayout.ExpandWidth(true), GUILayout.Height(26));
                 
                 //track length is only calculated when we are on the same planet to prevent floating point issues
                 string lengthString;
@@ -166,7 +166,7 @@ namespace PersistentTrails
                 else
                     lengthString = "on " + TrackManager.Instance.allTracks.ElementAt(i).ReferenceBody.bodyName;
 
-                GUILayout.Label(lengthString, Resources.LabelStyle, GUILayout.Width(75), GUILayout.Height(26));
+                GUILayout.Label(lengthString, GUIResources.LabelStyle, GUILayout.Width(75), GUILayout.Height(26));
 
                 if (trackColorTextures.Count < i + 1)
                 {
@@ -185,13 +185,13 @@ namespace PersistentTrails
                 else
                     showIconTex = invisibleTex;
 
-                if (GUILayout.Button(new GUIContent(showIconTex, "toggle visibility"), Resources.ButtonStyle, GUILayout.Width(26), GUILayout.Height(26)))
+                if (GUILayout.Button(new GUIContent(showIconTex, "toggle visibility"), GUIResources.ButtonStyle, GUILayout.Width(26), GUILayout.Height(26)))
                 {
                     track.toggleVisibility();
                 }
 
 
-                if (GUILayout.Button(new GUIContent(deleteTex, "delete track"), Resources.ButtonStyle, GUILayout.Width(26), GUILayout.Height(26)))
+                if (GUILayout.Button(new GUIContent(deleteTex, "delete track"), GUIResources.ButtonStyle, GUILayout.Width(26), GUILayout.Height(26)))
                 {
                     TrackManager.Instance.deleteTrack(ref track);
                     trackColorTextures.RemoveAt(i);
@@ -201,12 +201,12 @@ namespace PersistentTrails
                     }
                 }
 
-                if (GUILayout.Button(new GUIContent(continueTex, "resume track with current vessel"), Resources.ButtonStyle, GUILayout.Width(26), GUILayout.Height(26)))
+                if (GUILayout.Button(new GUIContent(continueTex, "resume track with current vessel"), GUIResources.ButtonStyle, GUILayout.Width(26), GUILayout.Height(26)))
                 {
                     TrackManager.Instance.continueTrack(track);
                 }
 
-                if (GUILayout.Button(new GUIContent(editTex, "edit track properties"), Resources.ButtonStyle, GUILayout.Width(26), GUILayout.Height(26)))
+                if (GUILayout.Button(new GUIContent(editTex, "edit track properties"), GUIResources.ButtonStyle, GUILayout.Width(26), GUILayout.Height(26)))
                 {
                     if (currentlyOpenTrackEditWindow != null)
                         currentlyOpenTrackEditWindow.SetVisible(false);
@@ -215,7 +215,7 @@ namespace PersistentTrails
                     currentlyOpenTrackEditWindow.SetVisible(true);
                 }
 
-                if (GUILayout.Button(new GUIContent(playbackTex, "playback track"), Resources.ButtonStyle, GUILayout.Width(26), GUILayout.Height(26)))
+                if (GUILayout.Button(new GUIContent(playbackTex, "playback track"), GUIResources.ButtonStyle, GUILayout.Width(26), GUILayout.Height(26)))
                 {
 
                     ReplayWindow window = new ReplayWindow(track);
@@ -254,9 +254,9 @@ namespace PersistentTrails
                     //Calc the size of the Tooltip
                     rectToolTipPosition = new Rect(Event.current.mousePosition.x - 25, Event.current.mousePosition.y + intTooltipVertOffset, 0, 0);
                     float minwidth, maxwidth;
-                    Resources.styleTooltipStyle.CalcMinMaxWidth(contTooltip, out minwidth, out maxwidth); // figure out how wide one line would be
-                    rectToolTipPosition.width = Math.Min(intTooltipMaxWidth - Resources.styleTooltipStyle.padding.horizontal, maxwidth); //then work out the height with a max width
-                    rectToolTipPosition.height = Resources.styleTooltipStyle.CalcHeight(contTooltip, rectToolTipPosition.width); // heers the result
+                    GUIResources.styleTooltipStyle.CalcMinMaxWidth(contTooltip, out minwidth, out maxwidth); // figure out how wide one line would be
+                    rectToolTipPosition.width = Math.Min(intTooltipMaxWidth - GUIResources.styleTooltipStyle.padding.horizontal, maxwidth); //then work out the height with a max width
+                    rectToolTipPosition.height = GUIResources.styleTooltipStyle.CalcHeight(contTooltip, rectToolTipPosition.width); // heers the result
                     //clamp tooltip to window frame
                     float rightEdge = rectToolTipPosition.x + rectToolTipPosition.width;
                     if (rightEdge > windowPos.width)
@@ -264,7 +264,7 @@ namespace PersistentTrails
 
                 }
                 //Draw the Tooltip
-                GUI.Label(rectToolTipPosition, contTooltip, Resources.styleTooltipStyle);
+                GUI.Label(rectToolTipPosition, contTooltip, GUIResources.styleTooltipStyle);
                 //On top of everything
                 GUI.depth = 0;
 

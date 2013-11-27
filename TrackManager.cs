@@ -49,7 +49,7 @@ namespace PersistentTrails
             //DontDestroyOnLoad(this);
             Debug.Log("Awakening ExplorerTrackBehaviour");
 
-            Resources.LoadAssets();
+            GUIResources.LoadAssets();
             
             //mainWindowOpen = false;
      
@@ -133,18 +133,18 @@ namespace PersistentTrails
 
         public void DrawGUI()
         {
-            Resources.SetupGUI();
+            GUIResources.SetupGUI();
             //Debug.Log("DrawMainButton");
             
 
             if (HighLogic.LoadedScene == GameScenes.FLIGHT)
             {
-                var icon = TrackManager.Instance.IsRecording ? Resources.IconRecording : Resources.IconNoRecording;
+                var icon = TrackManager.Instance.IsRecording ? GUIResources.IconRecording : GUIResources.IconNoRecording;
 
                 //Debug.Log("loaded button icon");
                 //Debug.Log("Rect: " + Resources.mainButtonPosition.ToString());
                 //Debug.Log("IconStyle: " + Resources.IconStyle.ToString());
-                if (GUI.Button(Resources.mainButtonPosition, new GUIContent(icon, "ExplorerTracks MainWindow"), Resources.IconStyle))
+                if (GUI.Button(GUIResources.mainButtonPosition, new GUIContent(icon, "ExplorerTracks MainWindow"), GUIResources.IconStyle))
                 {
 
                     //Debug.Log("toggling mainGui");

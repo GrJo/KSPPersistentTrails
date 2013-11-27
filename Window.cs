@@ -27,6 +27,7 @@
 
 using System;
 using UnityEngine;
+using PersistentTrails;
 
 namespace Tac
 {
@@ -125,12 +126,12 @@ namespace Tac
             {
                 ConfigNode windowConfig = config.GetNode(configNodeName);
 
-                windowPos.x = Utilities.GetValue(windowConfig, "x", windowPos.x);
-                windowPos.y = Utilities.GetValue(windowConfig, "y", windowPos.y);
-                windowPos.width = Utilities.GetValue(windowConfig, "width", windowPos.width);
-                windowPos.height = Utilities.GetValue(windowConfig, "height", windowPos.height);
+                windowPos.x = GUIResources.GetValue(windowConfig, "x", windowPos.x);
+                windowPos.y = GUIResources.GetValue(windowConfig, "y", windowPos.y);
+                windowPos.width = GUIResources.GetValue(windowConfig, "width", windowPos.width);
+                windowPos.height = GUIResources.GetValue(windowConfig, "height", windowPos.height);
 
-                bool newValue = Utilities.GetValue(windowConfig, "visible", visible);
+                bool newValue = GUIResources.GetValue(windowConfig, "visible", visible);
                 //SetVisible(newValue);
             }
         }
@@ -189,7 +190,7 @@ namespace Tac
                 {
                     GUI.skin = HighLogic.Skin;
                     ConfigureStyles();
-                    windowPos = Utilities.EnsureVisible(windowPos);
+                    windowPos = GUIResources.EnsureVisible(windowPos);
                     windowPos = GUILayout.Window(windowId, windowPos, PreDrawWindowContents, windowTitle, GUILayout.ExpandWidth(windowResizableX),
                         GUILayout.ExpandHeight(windowResizableY), GUILayout.MinWidth(windowPos.width), GUILayout.MinHeight(windowPos.height));
                 }

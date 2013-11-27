@@ -103,7 +103,7 @@ namespace PersistentTrails
 
         protected override void DrawWindowContents(int windowID)
         {
-            Resources.SetupGUI();
+            GUIResources.SetupGUI();
             GUILayout.BeginVertical();
             behaviour.currentReplayTime = GUILayout.HorizontalSlider((float)behaviour.currentReplayTime, 0, (float)behaviour.totalReplayTime);
             

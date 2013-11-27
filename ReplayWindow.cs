@@ -39,8 +39,13 @@ namespace PersistentTrails
             replayStartUT = Planetarium.GetUniversalTime();
             lastUpdateUT = replayStartUT;
 
-            Vector3 trackPos = track.evaluateAtTime(trackStartUT + currentReplayTime);
+            setGhostToPlaybackAt(trackStartUT + currentReplayTime);
+            Vector3 trackPos;
+            Quaternion orientation;
+            Vector3 velocity;
+            track.evaluateAtTime(trackStartUT + currentReplayTime, out trackPos, out orientation, out velocity);
             ghost.transform.position = trackPos;
+            ghost.transform.rotation = orientation;
 
             playbackFactor = 0;
             Debug.Log("initialized replayBehaviour, ghost at trackPos =" + trackPos.ToString());
@@ -54,10 +59,19 @@ namespace PersistentTrails
             //increment replayTime
             currentReplayTime += playbackFactor * (currentTimeUT - lastUpdateUT);
 
-            Vector3 trackPos = track.evaluateAtTime(trackStartUT + currentReplayTime);
-            ghost.transform.position = trackPos;
+            setGhostToPlaybackAt(trackStartUT + currentReplayTime);
 
             lastUpdateUT = currentTimeUT;
+        }
+
+        private void setGhostToPlaybackAt(double time)
+        {
+            Vector3 trackPos;
+            Quaternion orientation;
+            Vector3 velocity;
+            track.evaluateAtTime(trackStartUT + currentReplayTime, out trackPos, out orientation, out velocity);
+            ghost.transform.position = trackPos;
+            ghost.transform.rotation = orientation;
         }
     }
 

@@ -13,21 +13,28 @@ namespace PersistentTrails
         public double longitude;
         public double altitude;
         public double recordTime;
+        public Quaternion orientation;
+        public Vector3 velocity;
 
         public Waypoint(Vessel v)
         {        
             longitude = v.longitude;
             latitude = v.latitude;
-            altitude = v.altitude;            
-           
+            altitude = v.altitude;
+
+            velocity = v.rigidbody.velocity;
+            orientation = v.rigidbody.rotation;
+
             recordTime = Planetarium.GetUniversalTime();
         }
 
-        public Waypoint(double latitude, double longitude, double altitude, double recordTime) {
+        public Waypoint(double latitude, double longitude, double altitude, Quaternion orientation, Vector3 velocity, double recordTime) {
             this.latitude = latitude;
             this.longitude = longitude;
             this.altitude = altitude;
             this.recordTime = recordTime;
+            this.orientation = orientation;
+            this.velocity = velocity;
         }
     };
 
@@ -45,8 +52,8 @@ namespace PersistentTrails
             this.gameObject = null;
         }
 
-        public LogEntry(double latitude, double longitude, double altitude, double recordTime, String label, String description)
-            : base(latitude, longitude, altitude, recordTime)
+        public LogEntry(double latitude, double longitude, double altitude, Quaternion orientation, Vector3 velocity, double recordTime, String label, String description)
+            : base(latitude, longitude, altitude, orientation, velocity, recordTime)
         {
             this.label = label;
             this.description = description;
@@ -144,6 +151,34 @@ namespace PersistentTrails
 
         }
 
+        //private bool sufficientChange()
+        //{
+        //    if (Vector3.Distance(path.lastNode.position, newNode.position) < path.positionMinDeltaTolerance || timeElapsed < path.minTimeDelta)
+        //    {
+        //        return false;
+        //    }
+        //    if (Quaternion.Angle(path.lastNode.rotation, newNode.rotation) > path.orientationDeltaTolerance)
+        //    {
+        //        //Debug.Log("orientation fulfilled");
+        //        return true;
+        //    }
+        //    if (Vector3.Angle(path.lastNode.velocity.normalized, newNode.velocity.normalized) > path.velocityVectorDeltaTolerance)
+        //    {
+        //        //Debug.Log("velocity fulfilled");
+        //        return true;
+        //    }
+        //    if (Mathf.Abs(path.lastNode.speed - newNode.speed) > path.speedDeltaTolerance)
+        //    {
+        //        //Debug.Log("speed fulfilled");
+        //        return true;
+        //    }
+        //    if (Vector3.Distance(path.lastNode.position, newNode.position) > path.positionDeltaTolerance)
+        //    {
+        //        //Debug.Log("maxDist fulfilled");
+        //        return true;
+        //    }
+        //    return false;
+        //}
         public void addWaypoint()
         {
             //Debug.Log("Track.addWaypoint");
@@ -154,7 +189,8 @@ namespace PersistentTrails
                 return;
 
             Vector3 currentPos = this.referenceBody.GetWorldSurfacePosition(SourceVessel.latitude, SourceVessel.longitude, SourceVessel.altitude);
-            
+            //Vector3 velocity = SourceVessel.rigidbody.velocity;
+            //Quaternion orientation = SourceVessel.rigidbody.rotation;
 
             //Debug.Log("adding waypoint to list");
             waypoints.Add(new Waypoint(this.SourceVessel));
@@ -480,19 +516,31 @@ namespace PersistentTrails
 
         }
 
-        public Vector3 evaluateAtTime(double ut)
+        public void evaluateAtTime(double ut, out Vector3 position, out Quaternion orientation, out Vector3 velocity)
         {
+            position = new Vector3();
+            orientation = new Quaternion();
+            velocity = new Vector3();
+
             if (waypoints.Count == 0)
-                return new Vector3();
+                return;
 
             //Debug.Log("Track.evaluateAt ut=" + ut + ", track starts at " + waypoints.First().recordTime + " and ends at " + waypoints.Last().recordTime);
-            
+
 
             if (ut <= waypoints.First().recordTime)
-                return referenceBody.GetWorldSurfacePosition(waypoints.First().latitude, waypoints.First().longitude, waypoints.First().altitude);
+            {
+                position = referenceBody.GetWorldSurfacePosition(waypoints.First().latitude, waypoints.First().longitude, waypoints.First().altitude);
+                orientation = waypoints.First().orientation;
+                velocity = waypoints.First().velocity;
+            }
 
             if (ut >= waypoints.Last().recordTime)
-                return referenceBody.GetWorldSurfacePosition(waypoints.Last().latitude, waypoints.Last().longitude, waypoints.Last().altitude);
+            {
+                position = referenceBody.GetWorldSurfacePosition(waypoints.Last().latitude, waypoints.Last().longitude, waypoints.Last().altitude);
+                orientation = waypoints.Last().orientation;
+                velocity = waypoints.Last().velocity;
+            }
 
 
             for (int i = 0; i < waypoints.Count-1; ++i)
@@ -508,16 +556,17 @@ namespace PersistentTrails
                     //evaluate on this segment
                     Vector3 start = referenceBody.GetWorldSurfacePosition(waypoints[i].latitude, waypoints[i].longitude, waypoints[i].altitude);
                     Vector3 end = referenceBody.GetWorldSurfacePosition(waypoints[i + 1].latitude, waypoints[i + 1].longitude, waypoints[i + 1].altitude);
-
+                    
                     double timeOnSegment = timeNext - timeThis;
 
                     //Debug.Log(string.Format("found segment at i={0}  from {1} to {2}, evaluating at relvalue {3}", i, start.ToString(), end.ToString(), (float)(ut - timeThis) / (float) timeOnSegment));
-                    return Vector3.Slerp(start, end, (float) (ut - timeThis) / (float) timeOnSegment);
+                    float progress = (float)(ut - timeThis) / (float)timeOnSegment;
+                    position = Vector3.Lerp(start, end, progress);
+                    orientation = Quaternion.Lerp(waypoints[i].orientation, waypoints[i + 1].orientation, progress); //Lerp is faster, maybe use the more accurate Slerp for better results?
+                    velocity = Vector3.Lerp(waypoints[i].velocity, waypoints[i + 1].velocity, progress); //Lerp is faster, maybe use the more accurate Slerp for better results?
 
                 }
             }
-
-            return new Vector3();
         }
 
         public double GetStartTime()
@@ -538,33 +587,38 @@ namespace PersistentTrails
 
         public String serialized()
         {
-            string header = "[HEADER]\n"
-                + Name + "\n"
-                + Description + "\n"
-                + (this.isVisible ? "1" : "0") + "\n"
-                + this.referenceBody.GetName() + "\n"
-                + this.SamplingFactor + "\n"
-                + this.LineColor.r + ";" + this.LineColor.g + ";" + this.LineColor.b + ";" + this.LineColor.a + "\n"
-                + this.LineWidth + "\n"
-                + this.ConeRadiusToLineWidthFactor + "\n"
-                + this.NumDirectionMarkers + "\n";
+            string header = "VERSION:" + Utilities.trackFileFormat + "\n"
+                + "[HEADER]\n"
+                + "VESSELNAME:" + Name + "\n"
+                + "DESCRIPTION:" + Description + "\n"
+                + "VISIBLE:" + (this.isVisible ? "1" : "0") + "\n"
+                + "MAINBODY:" + this.referenceBody.GetName() + "\n"
+                + "SAMPLING:" + this.SamplingFactor + "\n"
+                + "LINECOLOR:" + this.LineColor.r + ";" + this.LineColor.g + ";" + this.LineColor.b + ";" + this.LineColor.a + "\n"
+                + "LINEWIDTH:" + this.LineWidth + "\n"
+                + "CONERADIUSFACTOR:" +this.ConeRadiusToLineWidthFactor + "\n"
+                + "NUMDIRECTIONMARKERS:" + this.NumDirectionMarkers + "\n";
             
-
             string points= "[WAYPOINTS]\n";
             foreach (Waypoint waypoint in waypoints) {
-                points += waypoint.latitude + ";"
+                points +=
+                      waypoint.recordTime + ";"
+                    + waypoint.latitude + ";"
                     + waypoint.longitude + ";"
                     + waypoint.altitude + ";"
-                    + waypoint.recordTime + "\n";
+                    + waypoint.orientation.x + ";" + waypoint.orientation.y + ";" + waypoint.orientation.z + ";" + waypoint.orientation.w
+                    + waypoint.velocity.x + ";" + waypoint.velocity.y + ";" + waypoint.velocity.z + "\n";
             }
 
             string logs = "[LOGENTRIES]\n";
             foreach (LogEntry entry in logEntries)
             {
-                logs += entry.latitude + ";"
+                logs += entry.recordTime + ";"
+                    + entry.latitude + ";"
                     + entry.longitude + ";"
                     + entry.altitude + ";"
-                    + entry.recordTime + ";"
+                    + entry.orientation.x + ";" + entry.orientation.y + ";" + entry.orientation.z + ";" + entry.orientation.w + "\n"
+                    + entry.velocity.x + ";" + entry.velocity.y + ";" + entry.velocity.z + "\n"
                     + entry.label + ";"
                     + entry.description + "\n";
             }
@@ -581,56 +635,87 @@ namespace PersistentTrails
 
             try
             {
-                //Debug.Log("reading Header");
-
-                reader.ReadLine(); //HEader
-                this.Name = reader.ReadLine();
-                this.Description = reader.ReadLine();
-                string visString = reader.ReadLine();
-                
-                string refBodyName = reader.ReadLine();
-                //Debug.Log("reading celestialbody = " + refBodyName);
-                this.referenceBody = Utilities.CelestialBodyFromName(refBodyName);
-                //Debug.Log("reading + parsing samplingFactor");
-                this.SamplingFactor = int.Parse(reader.ReadLine());
-                //Debug.Log("samplingString = " + samplingString + ", parsed to samplingFactor = " + samplingFactor);
-
-                string colorString = reader.ReadLine();
-                this.LineColor = Utilities.makeColor(colorString);
-                LineWidth = float.Parse(reader.ReadLine());
-
-                string numString = reader.ReadLine();
-                this.ConeRadiusToLineWidthFactor = float.Parse(numString);
-                numString = reader.ReadLine();
-                this.NumDirectionMarkers = int.Parse(numString);
-
-                //Debug.Log("Header reading complete");
+                string line = reader.ReadLine(); //VERSION:X for new format, [HEADER] for legacy
+                //check if we need the legacy parser
+                if (!line.StartsWith("VERSION"))
+                {
+                    parseLegacyTrack(reader, filename);
+                }
 
 
-                
-                //Debug.Log("read waypoints");
-                reader.ReadLine();//WAYPOINTS
-                string line = reader.ReadLine(); //first waypoint
-                while (line != "[LOGENTRIES]" && !reader.EndOfStream) {
+                int fileVersion = int.Parse(line.Split(':').ElementAt(0));
+                reader.ReadLine(); //[HEADER]
+
+                while (line != "[LOGENTRIES]" && !reader.EndOfStream)
+                {
+                    String[] lineSplit = reader.ReadLine().Split(':');
+
+                    if (lineSplit[0].Equals("VESSELNAME")) { 
+                        Name = lineSplit[1];
+                    } 
+                    else if (lineSplit[0].Equals("DESCRIPTION")) { 
+                        Description = lineSplit[1];
+                    }  
+                    else if (lineSplit[0].Equals("VISIBLE")) { 
+                        Visible = lineSplit[1].Equals("1");
+                    }  
+                    else if (lineSplit[0].Equals("MAINBODY")) { 
+                        this.referenceBody = Utilities.CelestialBodyFromName(lineSplit[1]);
+                    } 
+                    else if (lineSplit[0].Equals("SAMPLING")) { 
+                        this.SamplingFactor = int.Parse(lineSplit[1]);
+                    }  
+                    else if (lineSplit[0].Equals("LINECOLOR")) { 
+                        LineColor = Utilities.makeColor(lineSplit[1]);
+                    }
+                    else if (lineSplit[0].Equals("LINEWIDTH"))
+                    { 
+                        LineWidth = float.Parse(lineSplit[1]);
+                    }
+                    else if (lineSplit[0].Equals("CONERADIUSFACTOR"))
+                    {
+                        ConeRadiusToLineWidthFactor = float.Parse(lineSplit[1]);
+                    }
+                    else if (lineSplit[0].Equals("NUMDIRECTIONMARKERS"))
+                    {
+                        NumDirectionMarkers = int.Parse(lineSplit[1]);
+                    } 
+
+                    
+                } //End Header
+
+                line = reader.ReadLine(); //[WAYPOINTS]
+                Debug.Log("waypoints header" + line);
+                while (line != "[LOGENTRIES]" && !reader.EndOfStream)
+                {
                     //Debug.Log("reading waypointline = " + line); 
                     string[] split = line.Split(';');
                     double lat, lon, alt, time;
-                    Double.TryParse(split[0], out lat);
-                    Double.TryParse(split[1], out lon);
-                    Double.TryParse(split[2], out alt);
-                    Double.TryParse(split[3], out time);
-                    waypoints.Add(new Waypoint(lat, lon, alt, time));
+                    float oriX, oriY, oriZ, oriW, vX, vY, vZ;
+                    Double.TryParse(split[0], out time);
+                    Double.TryParse(split[1], out lat);
+                    Double.TryParse(split[2], out lon);
+                    Double.TryParse(split[3], out alt);
+                    float.TryParse(split[4], out oriX);
+                    float.TryParse(split[5], out oriY);
+                    float.TryParse(split[6], out oriZ);
+                    float.TryParse(split[7], out oriW);
+                    float.TryParse(split[8], out vX);
+                    float.TryParse(split[9], out vY);
+                    float.TryParse(split[10], out vZ);
+                    
+                    waypoints.Add(new Waypoint(lat, lon, alt, new Quaternion(oriX, oriY, oriZ, oriW), new Vector3(vX, vY, vZ), time));
                     line = reader.ReadLine();
                 }
 
-                
                 //Debug.Log("read logentries");
                 line = reader.ReadLine();//first entry
-                while (!reader.EndOfStream) {
+                while (!reader.EndOfStream)
+                {
                     string trimmed = line;
                     trimmed = trimmed.Trim();
-                    if (! string.IsNullOrEmpty(trimmed)){
-
+                    if (!string.IsNullOrEmpty(trimmed))
+                    {
                         //Debug.Log("reading logentryline = " + line);
                         string[] split = line.Split(';');
                         double lat, lon, alt, time;
@@ -638,13 +723,14 @@ namespace PersistentTrails
                         Double.TryParse(split[1], out lon);
                         Double.TryParse(split[2], out alt);
                         Double.TryParse(split[3], out time);
-                        logEntries.Add(new LogEntry(lat, lon, alt, time, split[4], split[5]));
+                        logEntries.Add(new LogEntry(lat, lon, alt, new Quaternion(), new Vector3(), time, split[4], split[5]));
                     }
                     line = reader.ReadLine();
                 }
 
                 Debug.Log("Created track from file containing " + waypoints.Count + "waypoints and " + logEntries.Count + " log entries");
-                Visible = (visString == "1");
+
+
             }
             catch (Exception e) {
                 Debug.Log(e.ToString());
@@ -652,7 +738,74 @@ namespace PersistentTrails
         }
 
 
+        private void parseLegacyTrack(StreamReader reader, String name)
+        {
+            this.Name = name;
+            this.Description = reader.ReadLine();
+            string visString = reader.ReadLine();
 
+            string refBodyName = reader.ReadLine();
+            //Debug.Log("reading celestialbody = " + refBodyName);
+            this.referenceBody = Utilities.CelestialBodyFromName(refBodyName);
+            //Debug.Log("reading + parsing samplingFactor");
+            this.SamplingFactor = int.Parse(reader.ReadLine());
+            //Debug.Log("samplingString = " + samplingString + ", parsed to samplingFactor = " + samplingFactor);
+
+            string colorString = reader.ReadLine();
+            this.LineColor = Utilities.makeColor(colorString);
+            LineWidth = float.Parse(reader.ReadLine());
+
+            string numString = reader.ReadLine();
+            this.ConeRadiusToLineWidthFactor = float.Parse(numString);
+            numString = reader.ReadLine();
+            this.NumDirectionMarkers = int.Parse(numString);
+
+            //Debug.Log("Header reading complete");
+
+
+
+            //Debug.Log("read waypoints");
+            String line = reader.ReadLine();//WAYPOINTS
+            
+            while (line != "[LOGENTRIES]" && !reader.EndOfStream)
+            {
+                //Debug.Log("reading waypointline = " + line); 
+                string[] split = line.Split(';');
+                double lat, lon, alt, time;
+                Double.TryParse(split[0], out lat);
+                Double.TryParse(split[1], out lon);
+                Double.TryParse(split[2], out alt);
+                Double.TryParse(split[3], out time);
+                waypoints.Add(new Waypoint(lat, lon, alt, new Quaternion(), new Vector3(), time));
+                line = reader.ReadLine();
+            }
+
+
+            //Debug.Log("read logentries");
+            line = reader.ReadLine();//first entry
+            while (!reader.EndOfStream)
+            {
+                string trimmed = line;
+                trimmed = trimmed.Trim();
+                if (!string.IsNullOrEmpty(trimmed))
+                {
+                    //Debug.Log("reading logentryline = " + line);
+                    string[] split = line.Split(';');
+                    double lat, lon, alt, time;
+                    Double.TryParse(split[0], out lat);
+                    Double.TryParse(split[1], out lon);
+                    Double.TryParse(split[2], out alt);
+                    Double.TryParse(split[3], out time);
+                    logEntries.Add(new LogEntry(lat, lon, alt, new Quaternion(), new Vector3(), time, split[4], split[5]));
+                }
+                line = reader.ReadLine();
+            }
+
+            Debug.Log("Created track from file containing " + waypoints.Count + "waypoints and " + logEntries.Count + " log entries");
+            Visible = (visString == "1");
+        }
+
+      
 
 
 

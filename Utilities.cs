@@ -64,8 +64,8 @@ namespace PersistentTrails
         {
             foreach (Track t in trackList)
             {
-                
-                if (t.Name == name)
+
+                if (t.TrackName == name)
                 {
                     if (ignoreFirstOccurrence)
                         ignoreFirstOccurrence = false;

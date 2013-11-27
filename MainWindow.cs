@@ -157,7 +157,7 @@ namespace PersistentTrails
                 //GUIStyle trackColorFontStyle = new GUIStyle();
                 //trackColorFontStyle.normal.textColor = track.LineColor;
 
-                GUILayout.Label(TrackManager.Instance.allTracks.ElementAt(i).Name, GUIResources.LabelStyle, GUILayout.ExpandWidth(true), GUILayout.Height(26));
+                GUILayout.Label(TrackManager.Instance.allTracks.ElementAt(i).TrackName, GUIResources.LabelStyle, GUILayout.ExpandWidth(true), GUILayout.Height(26));
                 
                 //track length is only calculated when we are on the same planet to prevent floating point issues
                 string lengthString;

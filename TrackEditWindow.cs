@@ -32,7 +32,7 @@ namespace PersistentTrails
             this.mainWindow = mainWindow;
             this.track = track;
             this.trackList = TrackManager.Instance.allTracks;
-            newName = track.Name;
+            newName = track.TrackName;
             newDescription = track.Description;
             newColor = track.LineColor;
             sampling = track.SamplingFactor;
@@ -199,11 +199,11 @@ namespace PersistentTrails
 
             if (GUILayout.Button("OK")) {
                 
-                string newUniqueName = Utilities.makeUniqueTrackName(newName, ref trackList, true); 
-                if (File.Exists(Utilities.TrackPath + track.Name + ".trk"))
-                    File.Move(Utilities.TrackPath + track.Name + ".trk", Utilities.TrackPath + newUniqueName + ".trk");
+                string newUniqueName = Utilities.makeUniqueTrackName(newName, ref trackList, true);
+                if (File.Exists(Utilities.TrackPath + track.TrackName + ".trk"))
+                    File.Move(Utilities.TrackPath + track.TrackName + ".trk", Utilities.TrackPath + newUniqueName + ".trk");
 
-                track.Name = newUniqueName;
+                track.TrackName = newUniqueName;
                 track.Description = newDescription;
                 track.LineColor = newColor;
                 track.SamplingFactor = (int) sampling;

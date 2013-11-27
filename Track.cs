@@ -95,7 +95,8 @@ namespace PersistentTrails
         public float ConeRadiusToLineWidthFactor { get; set;  }
         public int NumDirectionMarkers { get; set; }
         public int SamplingFactor { get; set; }
-        public String Name {get; set; }
+        public String TrackName {get; set; }
+        public String VesselName { get; set; }
         public String Description { get; set; }
 
 
@@ -104,7 +105,8 @@ namespace PersistentTrails
         {
             initDefaultValues();
 
-            Name = FlightGlobals.ActiveVessel.vesselName;
+            TrackName = FlightGlobals.ActiveVessel.vesselName;
+            VesselName = TrackName;
             //description = FlightGlobals.
             referenceBody = FlightGlobals.ActiveVessel.mainBody;
             SourceVessel = FlightGlobals.ActiveVessel;
@@ -114,14 +116,14 @@ namespace PersistentTrails
         }
 
         ~Track() {
-            Debug.Log("Track " + Name + " Destructor");
+            //Debug.Log("Track " + Name + " Destructor");
             Visible = false;
 
 
        }
 
         private void initDefaultValues() {
-            Name = "";
+            TrackName = "unnamed track";
             Description = "";
             waypoints  = new List<Waypoint>();
             logEntries  = new List<LogEntry>();
@@ -279,7 +281,7 @@ namespace PersistentTrails
 
                 if (drawnPathObj != null)
                 {
-                    Debug.Log("Removing Renderer for Path " + Name);
+                    Debug.Log("Removing Renderer for Path " + TrackName);
                     lineRenderer.SetVertexCount(0);
                     lineRenderer.enabled = false;
                     GameObject.Destroy(drawnPathObj);
@@ -591,7 +593,7 @@ namespace PersistentTrails
         {
             string header = "VERSION:" + Utilities.trackFileFormat + "\n"
                 + "[HEADER]\n"
-                + "VESSELNAME:" + Name + "\n"
+                + "VESSELNAME:" + VesselName + "\n"
                 + "DESCRIPTION:" + Description + "\n"
                 + "VISIBLE:" + (this.isVisible ? "1" : "0") + "\n"
                 + "MAINBODY:" + this.referenceBody.GetName() + "\n"
@@ -653,6 +655,14 @@ namespace PersistentTrails
 
                 line = reader.ReadLine(); //[HEADER]
 
+                //Debug.Log("Filename=" + filename);
+                Char separator = '/'; //Path.DirectorySeparatorChar doesnt give the correct one here...?
+                //Debug.Log("DirectorySeparator=" + separator + "last index in filename = " + filename.LastIndexOf(separator));
+                TrackName = filename.Substring(filename.LastIndexOf(separator) + 1); //cut path
+                //Debug.Log("cut-down filename = " + TrackName);
+                TrackName = TrackName.Substring(0, TrackName.Length - 4); //cut .trk
+                //Debug.Log("final trackname = " + TrackName);
+                
                 Debug.Log(line);
                 bool makeVisible = false;
 
@@ -662,8 +672,8 @@ namespace PersistentTrails
                     //Debug.Log("HeaderLine:" + line);
                     String[] lineSplit = line.Split(':');
 
-                    if (lineSplit[0].Equals("VESSELNAME")) { 
-                        Name = lineSplit[1];
+                    if (lineSplit[0].Equals("VESSELNAME")) {
+                        VesselName = lineSplit[1];
                     } 
                     else if (lineSplit[0].Equals("DESCRIPTION")) { 
                         Description = lineSplit[1];
@@ -754,7 +764,7 @@ namespace PersistentTrails
         {
             Debug.Log("parsing legacy track");
 
-            this.Name = reader.ReadLine();
+            this.TrackName = reader.ReadLine();
             this.Description = reader.ReadLine();
             string visString = reader.ReadLine();
 

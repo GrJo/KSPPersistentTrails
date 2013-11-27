@@ -131,8 +131,8 @@ namespace PersistentTrails
             TireRecorder.Instance.update();
 
             // --- TEST CRAFT SERIALIZE ---
-            if (Input.GetKeyDown(KeyCode.F8))
-                CraftLoader.saveCraftToFile();
+            //if (Input.GetKeyDown(KeyCode.F8))
+            //    CraftLoader.saveCraftToFile();
         }
 
         public void DrawGUI()
@@ -228,9 +228,13 @@ namespace PersistentTrails
             Debug.Log("Starting new Track");
             recording = true;
 
+            
             //create new Track
-            activeTrack = new Track();
-            activeTrack.Name = Utilities.makeUniqueTrackName(activeTrack.Name, ref allTracks, false);
+            activeTrack = new Track(); //initializes with TrackName = activeVessel.Name
+
+            CraftLoader.saveCraftToFile();
+
+            activeTrack.TrackName = Utilities.makeUniqueTrackName(activeTrack.TrackName, ref allTracks, false);
             allTracks.Add(activeTrack);
             updateCurrentTrack();
 
@@ -241,8 +245,12 @@ namespace PersistentTrails
             Debug.Log("TrackManager continueTrack()");
             stopRecording();
 
+            CraftLoader.saveCraftToFile();
+
             recording = true;
             track.SourceVessel = FlightGlobals.ActiveVessel;
+            track.VesselName = track.SourceVessel.name;
+
             activeTrack = track;
             updateCurrentTrack();
         }
@@ -252,9 +260,10 @@ namespace PersistentTrails
 
             track.Visible = false;
             Debug.Log("removing track");
-            if (File.Exists(Utilities.TrackPath + track.Name + ".trk")) {
+            if (File.Exists(Utilities.TrackPath + track.TrackName + ".trk"))
+            {
                 Debug.Log("deleting track-file");
-                File.Delete(Utilities.TrackPath + track.Name + ".trk");
+                File.Delete(Utilities.TrackPath + track.TrackName + ".trk");
             }
                 
 
@@ -300,12 +309,12 @@ namespace PersistentTrails
                     //string timestring = DateTime.Now.ToString("yyyy_MM_dd_HH_mm_ss");
                     //Debug.Log("timestring created: " + timestring);
 
-                    StreamWriter writer = new StreamWriter(Utilities.TrackPath + track.Name + ".trk");
+                    StreamWriter writer = new StreamWriter(Utilities.TrackPath + track.TrackName + ".trk");
                     //Debug.Log("serializing track");
                     writer.WriteLine(track.serialized());
                     writer.Close();
                     track.Modified = false;
-                    Debug.Log("wrote track to " + Utilities.TrackPath + track.Name + ".trk");
+                    Debug.Log("wrote track to " + Utilities.TrackPath + track.TrackName + ".trk");
                 }
             }
         }

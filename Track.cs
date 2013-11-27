@@ -645,7 +645,7 @@ namespace PersistentTrails
                     return;
                 }
 
-                Debug.Log("parsing Track");
+                //Debug.Log("parsing Track");
 
                 int fileVersion = int.Parse(line.Split(':')[1]);
 
@@ -659,7 +659,7 @@ namespace PersistentTrails
                 while (line != "[WAYPOINTS]" && !reader.EndOfStream)
                 {
                     line = reader.ReadLine();
-                    Debug.Log("HeaderLine:" + line);
+                    //Debug.Log("HeaderLine:" + line);
                     String[] lineSplit = line.Split(':');
 
                     if (lineSplit[0].Equals("VESSELNAME")) { 
@@ -700,7 +700,7 @@ namespace PersistentTrails
                 while (line != "[LOGENTRIES]" && !reader.EndOfStream)
                 {
                     
-                    Debug.Log("Waypointline = " + line); 
+                    //Debug.Log("Waypointline = " + line); 
                     string[] split = line.Split(';');
                     double lat, lon, alt, time;
                     float oriX, oriY, oriZ, oriW, vX, vY, vZ;

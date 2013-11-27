@@ -606,7 +606,7 @@ namespace PersistentTrails
                     + waypoint.latitude + ";"
                     + waypoint.longitude + ";"
                     + waypoint.altitude + ";"
-                    + waypoint.orientation.x + ";" + waypoint.orientation.y + ";" + waypoint.orientation.z + ";" + waypoint.orientation.w
+                    + waypoint.orientation.x + ";" + waypoint.orientation.y + ";" + waypoint.orientation.z + ";" + waypoint.orientation.w + ";"
                     + waypoint.velocity.x + ";" + waypoint.velocity.y + ";" + waypoint.velocity.z + "\n";
             }
 
@@ -617,7 +617,7 @@ namespace PersistentTrails
                     + entry.latitude + ";"
                     + entry.longitude + ";"
                     + entry.altitude + ";"
-                    + entry.orientation.x + ";" + entry.orientation.y + ";" + entry.orientation.z + ";" + entry.orientation.w + "\n"
+                    + entry.orientation.x + ";" + entry.orientation.y + ";" + entry.orientation.z + ";" + entry.orientation.w + ";"
                     + entry.velocity.x + ";" + entry.velocity.y + ";" + entry.velocity.z + "\n"
                     + entry.label + ";"
                     + entry.description + "\n";
@@ -639,16 +639,26 @@ namespace PersistentTrails
                 //check if we need the legacy parser
                 if (!line.StartsWith("VERSION"))
                 {
-                    parseLegacyTrack(reader, filename);
+                    parseLegacyTrack(reader);
+                    return;
                 }
 
+                Debug.Log("parsing Track");
 
-                int fileVersion = int.Parse(line.Split(':').ElementAt(0));
-                reader.ReadLine(); //[HEADER]
+                int fileVersion = int.Parse(line.Split(':')[1]);
 
-                while (line != "[LOGENTRIES]" && !reader.EndOfStream)
+                Debug.Log("parsing Track Version = " + fileVersion);
+
+                line = reader.ReadLine(); //[HEADER]
+
+                Debug.Log(line);
+                bool makeVisible = false;
+
+                while (line != "[WAYPOINTS]" && !reader.EndOfStream)
                 {
-                    String[] lineSplit = reader.ReadLine().Split(':');
+                    line = reader.ReadLine();
+                    Debug.Log("HeaderLine:" + line);
+                    String[] lineSplit = line.Split(':');
 
                     if (lineSplit[0].Equals("VESSELNAME")) { 
                         Name = lineSplit[1];
@@ -656,8 +666,8 @@ namespace PersistentTrails
                     else if (lineSplit[0].Equals("DESCRIPTION")) { 
                         Description = lineSplit[1];
                     }  
-                    else if (lineSplit[0].Equals("VISIBLE")) { 
-                        Visible = lineSplit[1].Equals("1");
+                    else if (lineSplit[0].Equals("VISIBLE")) {
+                        makeVisible = lineSplit[1].Equals("1");
                     }  
                     else if (lineSplit[0].Equals("MAINBODY")) { 
                         this.referenceBody = Utilities.CelestialBodyFromName(lineSplit[1]);
@@ -684,11 +694,11 @@ namespace PersistentTrails
                     
                 } //End Header
 
-                line = reader.ReadLine(); //[WAYPOINTS]
-                Debug.Log("waypoints header" + line);
+                line = reader.ReadLine(); //first actual waypoint
                 while (line != "[LOGENTRIES]" && !reader.EndOfStream)
                 {
-                    //Debug.Log("reading waypointline = " + line); 
+                    
+                    Debug.Log("Waypointline = " + line); 
                     string[] split = line.Split(';');
                     double lat, lon, alt, time;
                     float oriX, oriY, oriZ, oriW, vX, vY, vZ;
@@ -708,7 +718,7 @@ namespace PersistentTrails
                     line = reader.ReadLine();
                 }
 
-                //Debug.Log("read logentries");
+                Debug.Log("reading logentries");
                 line = reader.ReadLine();//first entry
                 while (!reader.EndOfStream)
                 {
@@ -729,7 +739,7 @@ namespace PersistentTrails
                 }
 
                 Debug.Log("Created track from file containing " + waypoints.Count + "waypoints and " + logEntries.Count + " log entries");
-
+                Visible = makeVisible; //set visible at end only
 
             }
             catch (Exception e) {
@@ -738,9 +748,11 @@ namespace PersistentTrails
         }
 
 
-        private void parseLegacyTrack(StreamReader reader, String name)
+        private void parseLegacyTrack(StreamReader reader)
         {
-            this.Name = name;
+            Debug.Log("parsing legacy track");
+
+            this.Name = reader.ReadLine();
             this.Description = reader.ReadLine();
             string visString = reader.ReadLine();
 
@@ -765,8 +777,8 @@ namespace PersistentTrails
 
 
             //Debug.Log("read waypoints");
-            String line = reader.ReadLine();//WAYPOINTS
-            
+            reader.ReadLine();//WAYPOINTS
+            string line = reader.ReadLine(); //first waypoint
             while (line != "[LOGENTRIES]" && !reader.EndOfStream)
             {
                 //Debug.Log("reading waypointline = " + line); 
@@ -789,6 +801,7 @@ namespace PersistentTrails
                 trimmed = trimmed.Trim();
                 if (!string.IsNullOrEmpty(trimmed))
                 {
+
                     //Debug.Log("reading logentryline = " + line);
                     string[] split = line.Split(';');
                     double lat, lon, alt, time;
@@ -800,6 +813,8 @@ namespace PersistentTrails
                 }
                 line = reader.ReadLine();
             }
+
+
 
             Debug.Log("Created track from file containing " + waypoints.Count + "waypoints and " + logEntries.Count + " log entries");
             Visible = (visString == "1");

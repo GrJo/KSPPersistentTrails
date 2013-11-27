@@ -10,3 +10,12 @@ C:\Users\Gregor\Documents\GitHub\KSPPersistentTrails\bin\Debug\UnityEngine.xml
 C:\Users\Gregor\Documents\GitHub\KSPPersistentTrails\obj\Debug\PersistentTrails.csprojResolveAssemblyReference.cache
 C:\Users\Gregor\Documents\GitHub\KSPPersistentTrails\obj\Debug\PersistentTrails.dll
 C:\Users\Gregor\Documents\GitHub\KSPPersistentTrails\obj\Debug\PersistentTrails.pdb
+D:\GitHub\KSPPersistentTrails\bin\Debug\PersistentTrails.dll
+D:\GitHub\KSPPersistentTrails\bin\Debug\PersistentTrails.pdb
+D:\GitHub\KSPPersistentTrails\bin\Debug\Mono.Cecil.dll
+D:\GitHub\KSPPersistentTrails\bin\Debug\Assembly-CSharp-firstpass.dll
+D:\GitHub\KSPPersistentTrails\bin\Debug\Assembly-CSharp.xml
+D:\GitHub\KSPPersistentTrails\bin\Debug\UnityEngine.xml
+D:\GitHub\KSPPersistentTrails\obj\Debug\PersistentTrails.csprojResolveAssemblyReference.cache
+D:\GitHub\KSPPersistentTrails\obj\Debug\PersistentTrails.dll
+D:\GitHub\KSPPersistentTrails\obj\Debug\PersistentTrails.pdb

@@ -22,7 +22,7 @@ namespace PersistentTrails
             {
                 if (vessel.parts.Count > 0)
                 {
-                    Debug.Log("vessel parts: " + vessel.parts.Count);
+                    //Debug.Log("vessel parts: " + vessel.parts.Count);
                     rootPosition = vessel.parts[0].transform.position;
                     rootRotation = vessel.parts[0].transform.rotation;
                     Quaternion worldUp = Quaternion.Euler((vessel.rigidbody.position - vessel.mainBody.position).normalized);
@@ -40,7 +40,7 @@ namespace PersistentTrails
                         if (fetchModel) newPartValue.model = findPartModel(newPartValue.partName);
                         partList.Add(newPartValue);
                     }
-                    Debug.Log("partList count: " + partList.Count);
+                    //Debug.Log("partList count: " + partList.Count);
                 }
             }
             return partList;
@@ -48,16 +48,17 @@ namespace PersistentTrails
 
         private static string serialize()
         {
-            string output = String.Concat(Utilities.craftFileFormat, "\n");
+            StringBuilder output = new StringBuilder();
+            output.AppendLine(Utilities.craftFileFormat.ToString());
             foreach (PartValue value in getParts(FlightGlobals.ActiveVessel, false))
             {
-                output = String.Concat(output, value.partName, "\n");
-                output = String.Concat(output, Utilities.Vector3ToString(value.position), "\n");
-                output = String.Concat(output, Utilities.QuaternionToString(value.rotation), "\n");
-                output = String.Concat(output, value.scale, "\n");
+                output.AppendLine(value.partName);
+                output.AppendLine(Utilities.Vector3ToString(value.position));
+                output.AppendLine(Utilities.QuaternionToString(value.rotation));
+                output.AppendLine(value.scale.ToString());
             }
-            output = String.Concat(output, "[EOF]");
-            return output;
+            output.Append("[EOF]");
+            return output.ToString();
         }        
 
         public static void saveCraftToFile()
@@ -71,7 +72,7 @@ namespace PersistentTrails
         {
             List<PartValue> loadedList = new List<PartValue>();
             PartValue newValue = new PartValue();
-            StreamReader stream = new StreamReader(fileName);
+            StreamReader stream = new StreamReader(fileName); // exceptions handled by assembleCraft
             string newLine = string.Empty;
             int craftFileFormat = 0;
             int.TryParse(stream.ReadLine(), out craftFileFormat);
@@ -85,9 +86,9 @@ namespace PersistentTrails
                     newValue.position = Utilities.parseVector3(stream.ReadLine());
                     newValue.rotation = Utilities.parseQuaternion(stream.ReadLine());
                     float.TryParse(stream.ReadLine(), out newValue.scale);
-                    Debug.Log("finding model " + newValue.partName);
+                    //Debug.Log("finding model " + newValue.partName);
                     newValue.model = findPartModel(newValue.partName);
-                    Debug.Log("model null? " + (newValue.model == null));
+                    //Debug.Log("model null? " + (newValue.model == null));
                     loadedList.Add(newValue.clone());
                 }                
             }
@@ -114,16 +115,16 @@ namespace PersistentTrails
             }
             foreach (PartValue pv in pvList)
             {
-                Debug.Log("pv.name is " + pv.partName);
+                //Debug.Log("pv.name is " + pv.partName);
                 pv.model.SetActive(true);
-                Debug.Log("pv.model exists");
+                //Debug.Log("pv.model exists");
                 pv.model.transform.parent = craft.transform;
                 pv.model.transform.localPosition = pv.position;
                 pv.model.transform.localRotation = pv.rotation;
                 if (pv.scale > 7f) pv.scale /= 10f;
                 if (pv.scale > 7f) pv.scale /= 10f; // twice to catch both 0.01 scale parts, and 0.1 scales. Gotta find a better way. Need to read the part cfg scale
                 pv.model.transform.localScale = new Vector3(pv.scale, pv.scale, pv.scale);
-                Debug.Log("Part: " + pv.partName + "Scale: " + pv.scale + "/" + pv.model.transform.localScale);
+                //Debug.Log("Part: " + pv.partName + "Scale: " + pv.scale + "/" + pv.model.transform.localScale);
                 //Debug.Log("Part: " + pv.position);
                 //Debug.Log("Part: " + pv.rotation);
                 //Debug.Log("Part: " + pv.scale);

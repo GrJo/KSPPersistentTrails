@@ -32,7 +32,14 @@ namespace PersistentTrails
             this.track = track;
             this.ghost = ghost;
             trackStartUT = track.GetStartTime();
+            
+            
             totalReplayTime = track.GetEndTime() - track.GetStartTime();
+            if (track.EndAction == Track.EndActions.LOOP)
+            {
+                totalReplayTime += track.LoopClosureTime;
+            }
+
             currentReplayTime = 0;
 
 
@@ -62,6 +69,14 @@ namespace PersistentTrails
             setGhostToPlaybackAt(trackStartUT + currentReplayTime);
 
             lastUpdateUT = currentTimeUT;
+
+            //check end reached
+            if (currentReplayTime >= totalReplayTime)
+            {
+                if (track.EndAction == Track.EndActions.LOOP)
+                    currentReplayTime = 0;
+                //TODO add OFFRAILS handling here
+            }
         }
 
         private void setGhostToPlaybackAt(double time)

@@ -28,6 +28,18 @@ namespace PersistentTrails
             recordTime = Planetarium.GetUniversalTime();
         }
 
+        public Waypoint(Waypoint other)//copy constructor
+        {
+            longitude = other.longitude;
+            latitude = other.latitude;
+            altitude = other.altitude;
+
+            velocity = other.velocity;
+            orientation = other.orientation;
+
+            recordTime = other.recordTime;
+        }
+
         public Waypoint(double latitude, double longitude, double altitude, Quaternion orientation, Vector3 velocity, double recordTime) {
             this.latitude = latitude;
             this.longitude = longitude;
@@ -99,7 +111,10 @@ namespace PersistentTrails
         public String VesselName { get; set; }
         public String Description { get; set; }
 
+        public enum EndActions { STOP, LOOP, OFFRAILS }
 
+        public EndActions EndAction { get; set; }
+        public int LoopClosureTime { get; set; }
         
         public Track() 
         {
@@ -139,6 +154,9 @@ namespace PersistentTrails
 
             //init mesh and directionmarkes
             directionMarkerMesh = MeshFactory.createCone(1,2,12);
+
+            EndAction = EndActions.STOP;
+            LoopClosureTime = 0;
 
             for (int i = 0; i < 20; ++i)
             {
@@ -477,6 +495,7 @@ namespace PersistentTrails
             return totalLength;
         }
 
+        //Evaluate at relative position (0..1) of total length
         private Vector3 evaluateAt(float relValue, out Vector3 direction, out double lat, out double lon) {
             float length = this.length();
 
@@ -527,51 +546,73 @@ namespace PersistentTrails
             if (waypoints.Count == 0)
                 return;
 
+            closeLoop(); //only does anything at all if EndAction == LOOP
+
             //Debug.Log("Track.evaluateAt ut=" + ut + ", track starts at " + waypoints.First().recordTime + " and ends at " + waypoints.Last().recordTime);
 
-
+            
             if (ut <= waypoints.First().recordTime)
             {
                 position = referenceBody.GetWorldSurfacePosition(waypoints.First().latitude, waypoints.First().longitude, waypoints.First().altitude);
                 orientation = waypoints.First().orientation;
-                velocity = waypoints.First().velocity;
-                return;
+                velocity = waypoints.First().velocity;                
             }
-
-            if (ut >= waypoints.Last().recordTime)
+            else if (ut >= waypoints.Last().recordTime)
             {
                 position = referenceBody.GetWorldSurfacePosition(waypoints.Last().latitude, waypoints.Last().longitude, waypoints.Last().altitude);
                 orientation = waypoints.Last().orientation;
                 velocity = waypoints.Last().velocity;
-                return;
             }
+            else
+            { //intermediate point
 
-            for (int i = 0; i < waypoints.Count-1; ++i)
-            {
-                
-                //find out how much relPos is covered by this segment
-                //Vector3 segment = end - start;
-
-                double timeThis = waypoints[i].recordTime;
-                double timeNext = waypoints[i + 1].recordTime;
-
-                if (timeNext > ut)
+                for (int i = 0; i < waypoints.Count - 1; ++i)
                 {
-                    //evaluate on this segment
-                    Vector3 start = referenceBody.GetWorldSurfacePosition(waypoints[i].latitude, waypoints[i].longitude, waypoints[i].altitude);
-                    Vector3 end = referenceBody.GetWorldSurfacePosition(waypoints[i + 1].latitude, waypoints[i + 1].longitude, waypoints[i + 1].altitude);
-                    
-                    double timeOnSegment = timeNext - timeThis;
 
-                    //Debug.Log(string.Format("found segment at i={0}  from {1} to {2}, evaluating at relvalue {3}", i, start.ToString(), end.ToString(), (float)(ut - timeThis) / (float) timeOnSegment));
-                    float progress = (float)(ut - timeThis) / (float)timeOnSegment;
-                    position = Vector3.Lerp(start, end, progress);
-                    orientation = Quaternion.Lerp(waypoints[i].orientation, waypoints[i + 1].orientation, progress); //Lerp is faster, maybe use the more accurate Slerp for better results?
-                    velocity = Vector3.Lerp(waypoints[i].velocity, waypoints[i + 1].velocity, progress); //Lerp is faster, maybe use the more accurate Slerp for better results?
-                    return;
+                    //find out how much relPos is covered by this segment
+                    //Vector3 segment = end - start;
+
+                    double timeThis = waypoints[i].recordTime;
+                    double timeNext = waypoints[i + 1].recordTime;
+
+                    if (timeNext > ut)
+                    {
+                        //evaluate on this segment
+                        Vector3 start = referenceBody.GetWorldSurfacePosition(waypoints[i].latitude, waypoints[i].longitude, waypoints[i].altitude);
+                        Vector3 end = referenceBody.GetWorldSurfacePosition(waypoints[i + 1].latitude, waypoints[i + 1].longitude, waypoints[i + 1].altitude);
+
+                        double timeOnSegment = timeNext - timeThis;
+
+                        //Debug.Log(string.Format("found segment at i={0}  from {1} to {2}, evaluating at relvalue {3}", i, start.ToString(), end.ToString(), (float)(ut - timeThis) / (float) timeOnSegment));
+                        float progress = (float)(ut - timeThis) / (float)timeOnSegment;
+                        position = Vector3.Lerp(start, end, progress);
+                        orientation = Quaternion.Lerp(waypoints[i].orientation, waypoints[i + 1].orientation, progress); //Lerp is faster, maybe use the more accurate Slerp for better results?
+                        velocity = Vector3.Lerp(waypoints[i].velocity, waypoints[i + 1].velocity, progress); //Lerp is faster, maybe use the more accurate Slerp for better results?
+                        break;
+                    }
                 }
             }
+
+            openLoop();
         }
+
+        private void closeLoop()
+        {
+            if (EndAction == EndActions.LOOP)
+            {
+                double endTime = waypoints.Last().recordTime + LoopClosureTime;
+                //Debug.Log("closing loop-adding first waypoint to end at time " + endTime);
+                waypoints.Add(new Waypoint(waypoints.First()));
+                waypoints.Last().recordTime = endTime;
+            }
+        }
+
+        private void openLoop()
+        {
+            if (EndAction == EndActions.LOOP)
+                waypoints.RemoveAt(waypoints.Count-1); //pop last element
+        }
+
 
         public double GetStartTime()
         {
@@ -595,13 +636,15 @@ namespace PersistentTrails
                 + "[HEADER]\n"
                 + "VESSELNAME:" + VesselName + "\n"
                 + "DESCRIPTION:" + Description + "\n"
-                + "VISIBLE:" + (this.isVisible ? "1" : "0") + "\n"
-                + "MAINBODY:" + this.referenceBody.GetName() + "\n"
-                + "SAMPLING:" + this.SamplingFactor + "\n"
-                + "LINECOLOR:" + this.LineColor.r + ";" + this.LineColor.g + ";" + this.LineColor.b + ";" + this.LineColor.a + "\n"
-                + "LINEWIDTH:" + this.LineWidth + "\n"
-                + "CONERADIUSFACTOR:" +this.ConeRadiusToLineWidthFactor + "\n"
-                + "NUMDIRECTIONMARKERS:" + this.NumDirectionMarkers + "\n";
+                + "VISIBLE:" + (isVisible ? "1" : "0") + "\n"
+                + "MAINBODY:" + referenceBody.GetName() + "\n"
+                + "SAMPLING:" + SamplingFactor + "\n"
+                + "LINECOLOR:" + LineColor.r + ";" + LineColor.g + ";" + LineColor.b + ";" + LineColor.a + "\n"
+                + "LINEWIDTH:" + LineWidth + "\n"
+                + "CONERADIUSFACTOR:" + ConeRadiusToLineWidthFactor + "\n"
+                + "NUMDIRECTIONMARKERS:" + NumDirectionMarkers + "\n"
+                + "END:" + EndAction.ToString("F") + (EndAction == EndActions.LOOP ? ":" + LoopClosureTime.ToString() : "") + "\n"; //"F" makes creates a string literal
+
             
             string points= "[WAYPOINTS]\n";
             foreach (Waypoint waypoint in waypoints) {
@@ -701,6 +744,18 @@ namespace PersistentTrails
                     else if (lineSplit[0].Equals("NUMDIRECTIONMARKERS"))
                     {
                         NumDirectionMarkers = int.Parse(lineSplit[1]);
+                    }
+                    else if (lineSplit[0].Equals("END"))
+                    {
+                        //Debug.Log("Parsing END-TAG="+lineSplit[1]);
+                        EndAction = (EndActions)Enum.Parse(typeof(EndActions), lineSplit[1]);
+                        //Debug.Log("EndAction = " + EndAction.ToString("F"));
+
+                        if (EndAction == EndActions.LOOP)
+                        {
+                            //Debug.Log("LOOP endaction: Parsing string for looptime=" + lineSplit[2]); 
+                            LoopClosureTime = int.Parse(lineSplit[2]);
+                        }
                     } 
 
                     
@@ -831,12 +886,6 @@ namespace PersistentTrails
             Debug.Log("Created track from file containing " + waypoints.Count + "waypoints and " + logEntries.Count + " log entries");
             Visible = (visString == "1");
         }
-
-      
-
-
-
-
 
     }
 }

@@ -25,6 +25,8 @@ namespace PersistentTrails
         float lineWidth;
         float markerRadiusFactor;
         float numMarkers;
+        private int selectedActionIndex;
+        private float loopTime;
         Texture2D colorTex;
         MainWindow mainWindow;
 
@@ -39,7 +41,8 @@ namespace PersistentTrails
             lineWidth = track.LineWidth;
             markerRadiusFactor = track.ConeRadiusToLineWidthFactor;
             numMarkers = track.NumDirectionMarkers;
-
+            loopTime = track.LoopClosureTime;
+            selectedActionIndex = (int) track.EndAction;
             SetResizeX(true);
             SetResizeY(true);
 
@@ -196,6 +199,17 @@ namespace PersistentTrails
             GUILayout.EndHorizontal();
 
             GUILayout.BeginHorizontal();
+            GUILayout.Label("Replay End Action:");
+            selectedActionIndex = GUILayout.SelectionGrid(selectedActionIndex, new string[] { "Stop", "Loop", "OffRails" }, 3);
+            GUILayout.EndHorizontal();
+
+            GUILayout.BeginHorizontal();
+            GUILayout.Label("Loop closure time:");
+            loopTime = GUILayout.HorizontalSlider(loopTime, 0, 100);
+            GUILayout.Label("" + (int)loopTime + "s");
+            GUILayout.EndHorizontal();
+
+            GUILayout.BeginHorizontal();
 
             if (GUILayout.Button("OK")) {
                 
@@ -210,7 +224,11 @@ namespace PersistentTrails
                 track.LineWidth = lineWidth;
                 track.ConeRadiusToLineWidthFactor = markerRadiusFactor;
                 track.NumDirectionMarkers = (int)numMarkers;
+                track.LoopClosureTime = (int)loopTime;
+                track.EndAction = (Track.EndActions)selectedActionIndex;
+                
                 track.Modified = true;
+
                 track.setupRenderer();
                 mainWindow.updateColorTextures();
                 SetVisible(false);

@@ -128,7 +128,7 @@ namespace PersistentTrails
             //    KACWorker.DebugLogFormatted("Time Went Backwards - Load or restart - resetting inqueue flag");
             //    ShouldBeInPostDrawQueue = false;
             //}
-            TireRecorder.Instance.update();
+            //TireRecorder.Instance.update();
 
             // --- TEST CRAFT SERIALIZE ---
             //if (Input.GetKeyDown(KeyCode.F8))
@@ -169,7 +169,9 @@ namespace PersistentTrails
         private Track activeTrack;
         private bool recording;
         //private ExplorerTrackBehaviour behaviour;
-        
+        public RecordingThresholds ChangeThresholds{get; set;}
+
+
         public bool IsRecording { get { return recording; } }
 
         //Trackmanager is a singleton
@@ -287,7 +289,7 @@ namespace PersistentTrails
             //Debug.Log("TrackManager updateCurrentTrack()");
             if (recording)
             {
-                activeTrack.addWaypoint();
+                activeTrack.tryAddWaypoint(ChangeThresholds);
             }
         }
 

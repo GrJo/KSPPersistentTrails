@@ -106,25 +106,20 @@ namespace PersistentTrails
             GUILayout.EndHorizontal();
 
             GUILayout.BeginHorizontal();
-            if (GUILayout.Button("0.2s", (mainBehaviour.RecordingInterval == 0.2f) ? GUIResources.ButtonToggledStyle : GUIResources.ButtonStyle))
+            if (GUILayout.Button("High Precision", (mainBehaviour.RecordingInterval == 0.2f) ? GUIResources.ButtonToggledStyle : GUIResources.ButtonStyle))
             {
                 mainBehaviour.RecordingInterval = 0.2f;
+                TrackManager.Instance.ChangeThresholds = new RecordingThresholds(2, 2, 0.05f);
             }
-            if (GUILayout.Button("1s", (mainBehaviour.RecordingInterval == 1) ? GUIResources.ButtonToggledStyle : GUIResources.ButtonStyle))
+            if (GUILayout.Button("Medium Precision", (mainBehaviour.RecordingInterval == 1) ? GUIResources.ButtonToggledStyle : GUIResources.ButtonStyle))
             {
                 mainBehaviour.RecordingInterval = 1.0f;
+                TrackManager.Instance.ChangeThresholds = new RecordingThresholds(10, 10, 0.1f);
             }
-            if (GUILayout.Button("2s", (mainBehaviour.RecordingInterval == 2) ? GUIResources.ButtonToggledStyle : GUIResources.ButtonStyle))
-            {
-                mainBehaviour.RecordingInterval = 2.0f;
-            }
-            if (GUILayout.Button("5s", (mainBehaviour.RecordingInterval == 5) ? GUIResources.ButtonToggledStyle : GUIResources.ButtonStyle))
+            if (GUILayout.Button("Low Precision", (mainBehaviour.RecordingInterval == 5) ? GUIResources.ButtonToggledStyle : GUIResources.ButtonStyle))
             {
                 mainBehaviour.RecordingInterval = 5.0f;
-            }
-            if (GUILayout.Button("60s", (mainBehaviour.RecordingInterval == 60) ? GUIResources.ButtonToggledStyle : GUIResources.ButtonStyle))
-            {
-                mainBehaviour.RecordingInterval = 60.0f;
+                TrackManager.Instance.ChangeThresholds = new RecordingThresholds(20, 20, 0.25f);
             }
             GUILayout.EndHorizontal();
 

@@ -22,7 +22,7 @@ namespace PersistentTrails
             latitude = v.latitude;
             altitude = v.altitude;
 
-            velocity = v.rigidbody.velocity;
+            velocity = v.GetSrfVelocity();
             orientation = v.rigidbody.rotation;
 
             recordTime = Planetarium.GetUniversalTime();
@@ -171,55 +171,63 @@ namespace PersistentTrails
 
         }
 
-        //private bool sufficientChange()
-        //{
-        //    if (Vector3.Distance(path.lastNode.position, newNode.position) < path.positionMinDeltaTolerance || timeElapsed < path.minTimeDelta)
-        //    {
-        //        return false;
-        //    }
-        //    if (Quaternion.Angle(path.lastNode.rotation, newNode.rotation) > path.orientationDeltaTolerance)
-        //    {
-        //        //Debug.Log("orientation fulfilled");
-        //        return true;
-        //    }
-        //    if (Vector3.Angle(path.lastNode.velocity.normalized, newNode.velocity.normalized) > path.velocityVectorDeltaTolerance)
-        //    {
-        //        //Debug.Log("velocity fulfilled");
-        //        return true;
-        //    }
-        //    if (Mathf.Abs(path.lastNode.speed - newNode.speed) > path.speedDeltaTolerance)
-        //    {
-        //        //Debug.Log("speed fulfilled");
-        //        return true;
-        //    }
-        //    if (Vector3.Distance(path.lastNode.position, newNode.position) > path.positionDeltaTolerance)
-        //    {
-        //        //Debug.Log("maxDist fulfilled");
-        //        return true;
-        //    }
-        //    return false;
-        //}
-        public void addWaypoint()
+        private bool sufficientChange(Waypoint newNode, RecordingThresholds thresholds)
+        {
+            if (waypoints.Count == 0)
+                return true; //always add first waypoint
+
+            //SourceVessel.GetSrfVelocity().sqrMagnitude < 0.5f
+
+            if (Quaternion.Angle(waypoints.Last().orientation, newNode.orientation) > thresholds.minOrientationAngleChange )
+            {
+                //Debug.Log("orientation fulfilled");
+                return true;
+            }
+            if (Vector3.Angle(waypoints.Last().velocity.normalized, newNode.velocity.normalized) > thresholds.minVelocityAngleChange)
+            {
+                //accept velocity direction changes only if we are actually moving
+                if (newNode.velocity.sqrMagnitude > 0.5f)
+                {
+                    //Debug.Log("velocity fulfilled");
+                    return true;
+                }
+            }
+            float relativeSpeedChange = waypoints.Last().velocity.magnitude / newNode.velocity.magnitude;
+
+            if (Mathf.Abs(1 - relativeSpeedChange) > thresholds.minSpeedChangeFactor)
+            {
+                //Debug.Log("speed fulfilled");
+                return true;
+            }
+
+
+            return false;
+        }
+
+        public void tryAddWaypoint(RecordingThresholds thresholds) //check thresholds and maybe add new node if sufficient change happened
         {
             //Debug.Log("Track.addWaypoint");
             //Debug.Log("TrackDump: + " + serialized());
+            Waypoint newNode = new Waypoint(SourceVessel);
 
             //only record if vessel is moving
-            if (waypoints.Count > 0 && SourceVessel.GetSrfVelocity().sqrMagnitude < 0.5f)
+            if (!sufficientChange(newNode, thresholds))
                 return;
 
-            Vector3 currentPos = this.referenceBody.GetWorldSurfacePosition(SourceVessel.latitude, SourceVessel.longitude, SourceVessel.altitude);
+
             //Vector3 velocity = SourceVessel.rigidbody.velocity;
             //Quaternion orientation = SourceVessel.rigidbody.rotation;
 
             //Debug.Log("adding waypoint to list");
-            waypoints.Add(new Waypoint(this.SourceVessel));
+            waypoints.Add(newNode);
             Modified = true;
             
             //add new point to renderer
             if (Visible && waypoints.Count % SamplingFactor == 0){
                 int index = waypoints.Count / SamplingFactor - 1;
                 lineRenderer.SetVertexCount(index + 1);
+
+                Vector3 currentPos = this.referenceBody.GetWorldSurfacePosition(SourceVessel.latitude, SourceVessel.longitude, SourceVessel.altitude);
                 lineRenderer.SetPosition(index, currentPos);
 
                 //mapLineRenderer.SetVertexCount(index + 1);
@@ -885,6 +893,7 @@ namespace PersistentTrails
 
             Debug.Log("Created track from file containing " + waypoints.Count + "waypoints and " + logEntries.Count + " log entries");
             Visible = (visString == "1");
+            Modified = true; //legacy tracks are marked as modified for conversion
         }
 
     }

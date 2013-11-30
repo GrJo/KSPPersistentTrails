@@ -53,6 +53,7 @@
     <Compile Include="MeshFactory.cs" />
     <Compile Include="LogEntryWindow.cs" />
     <Compile Include="MainWindow.cs" />
+    <Compile Include="RecordingThresholds.cs" />
     <Compile Include="ReplayWindow.cs" />
     <Compile Include="TireTracker.cs" />
     <Compile Include="Track.cs" />

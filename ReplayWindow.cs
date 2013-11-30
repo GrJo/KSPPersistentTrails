@@ -23,6 +23,25 @@ namespace PersistentTrails
         public int playbackFactor;
         public double lastUpdateUT;
 
+        public Rigidbody rbody;
+        public Vector3 currentVelocity = Vector3.zero;
+        private bool _isOffRails = false;
+        private bool offRailsInitiliazed = false;
+        private Vector3 worldUp = Vector3.zero; // will be updated in Update
+        private float gravity = 9.8f;
+
+        public bool isOffRails
+        {
+            get { return _isOffRails; }
+            set
+            {
+                if (value)                
+                    goOffRails();                
+                else                
+                    goOnRails();                
+            }
+        }
+
         public void OnAwake() {
             Debug.Log("ReplayBehaviour awake");
         }
@@ -59,6 +78,38 @@ namespace PersistentTrails
 
         }
 
+        public void goOffRails()
+        {
+            _isOffRails = true;
+            if (!offRailsInitiliazed) // run once on each offRails activation
+            {
+                if (rbody == null)
+                    setupRigidBody();
+                //playback = false;
+                if (rbody == null) return;
+                rbody.isKinematic = false;
+                rbody.velocity = currentVelocity;
+                offRailsInitiliazed = true;
+            }
+        }
+
+        public void goOnRails()
+        {
+            _isOffRails = false;
+            offRailsInitiliazed = false;
+            Destroy(rbody);
+        }
+
+        public void setupRigidBody()
+        {
+            Debug.Log("Adding rigidbody to playback ghost");
+            rbody = gameObject.AddComponent<Rigidbody>();
+            rbody.mass = 3.0f;
+            rbody.drag = 0.05f;
+            rbody.useGravity = true;
+            rbody.isKinematic = false;
+        }
+
         public void Update() {
             //Debug.Log("Replay OnUpdate: evaluating track after t = " + currentReplayTime + "s, UT= " + (trackStartUT + currentReplayTime));
             double currentTimeUT = Planetarium.GetUniversalTime();
@@ -66,7 +117,8 @@ namespace PersistentTrails
             //increment replayTime
             currentReplayTime += playbackFactor * (currentTimeUT - lastUpdateUT);
 
-            setGhostToPlaybackAt(trackStartUT + currentReplayTime);
+            if (!isOffRails)
+                setGhostToPlaybackAt(trackStartUT + currentReplayTime);
 
             lastUpdateUT = currentTimeUT;
 
@@ -75,6 +127,11 @@ namespace PersistentTrails
             {
                 if (track.EndAction == Track.EndActions.LOOP)
                     currentReplayTime = 0;
+                else if (track.EndAction == Track.EndActions.OFFRAILS)
+                {
+                    isOffRails = true;
+                    //goOffRails();
+                }
                 //TODO add OFFRAILS handling here
             }
         }
@@ -87,6 +144,7 @@ namespace PersistentTrails
             track.evaluateAtTime(trackStartUT + currentReplayTime, out trackPos, out orientation, out velocity);
             ghost.transform.position = trackPos;
             ghost.transform.rotation = orientation;
+            currentVelocity = velocity;
         }
     }
 
@@ -155,18 +213,22 @@ namespace PersistentTrails
             GUILayout.BeginHorizontal(); // BEGIN outer container
             if (GUILayout.Button(playTex))
             {
+                behaviour.isOffRails = false;
                 behaviour.playbackFactor = 1;
             }
             if (GUILayout.Button(ffTex))
             {
+                behaviour.isOffRails = false;
                 behaviour.playbackFactor+=1;
             }
             if (GUILayout.Button(pauseTex))
             {
+                behaviour.isOffRails = false;
                 behaviour.playbackFactor = 0;
             }
             if (GUILayout.Button(stopTex))
             {
+                behaviour.isOffRails = false;
                 behaviour.playbackFactor = 0;
                 behaviour.currentReplayTime = 0;
             }

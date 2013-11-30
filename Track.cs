@@ -673,7 +673,7 @@ namespace PersistentTrails
                     + entry.longitude + ";"
                     + entry.altitude + ";"
                     + entry.orientation.x + ";" + entry.orientation.y + ";" + entry.orientation.z + ";" + entry.orientation.w + ";"
-                    + entry.velocity.x + ";" + entry.velocity.y + ";" + entry.velocity.z + "\n"
+                    + entry.velocity.x + ";" + entry.velocity.y + ";" + entry.velocity.z + ";"
                     + entry.label + ";"
                     + entry.description + "\n";
             }

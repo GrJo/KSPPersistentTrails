@@ -150,6 +150,7 @@ namespace PersistentTrails
             LineWidth = 0.2f;
             NumDirectionMarkers = 0;
             ConeRadiusToLineWidthFactor = 30;
+            ReplayColliders = false;
 
             //this.renderCoords = new List<Vector3>();
 
@@ -652,8 +653,9 @@ namespace PersistentTrails
                 + "LINEWIDTH:" + LineWidth + "\n"
                 + "CONERADIUSFACTOR:" + ConeRadiusToLineWidthFactor + "\n"
                 + "NUMDIRECTIONMARKERS:" + NumDirectionMarkers + "\n"
+                + "REPLAYCOLLIDERS:" + (ReplayColliders? "1":"0") + "\n"
                 + "END:" + EndAction.ToString("F") + (EndAction == EndActions.LOOP ? ":" + LoopClosureTime.ToString() : "") + "\n"; //"F" makes creates a string literal
-
+                
             
             string points= "[WAYPOINTS]\n";
             foreach (Waypoint waypoint in waypoints) {
@@ -754,6 +756,10 @@ namespace PersistentTrails
                     {
                         NumDirectionMarkers = int.Parse(lineSplit[1]);
                     }
+                    else if (lineSplit[0].Equals("REPLAYCOLLIDERS"))
+                    {
+                        ReplayColliders = lineSplit[1].Equals("1");
+                    }  
                     else if (lineSplit[0].Equals("END"))
                     {
                         //Debug.Log("Parsing END-TAG="+lineSplit[1]);

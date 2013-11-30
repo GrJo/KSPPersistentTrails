@@ -27,6 +27,8 @@ namespace PersistentTrails
         float numMarkers;
         private int selectedActionIndex;
         private float loopTime;
+        private bool colliders;
+
         Texture2D colorTex;
         MainWindow mainWindow;
 
@@ -42,6 +44,8 @@ namespace PersistentTrails
             markerRadiusFactor = track.ConeRadiusToLineWidthFactor;
             numMarkers = track.NumDirectionMarkers;
             loopTime = track.LoopClosureTime;
+            colliders = track.ReplayColliders;
+
             selectedActionIndex = (int) track.EndAction;
             SetResizeX(true);
             SetResizeY(true);
@@ -198,6 +202,8 @@ namespace PersistentTrails
             GUILayout.Label("" + (int)numMarkers);
             GUILayout.EndHorizontal();
 
+            colliders = GUILayout.Toggle(colliders, "Activate Replay Colliders");
+            
             GUILayout.BeginHorizontal();
             GUILayout.Label("Replay End Action:");
             selectedActionIndex = GUILayout.SelectionGrid(selectedActionIndex, new string[] { "Stop", "Loop", "OffRails", "Delete" }, 4);
@@ -225,6 +231,7 @@ namespace PersistentTrails
                 track.ConeRadiusToLineWidthFactor = markerRadiusFactor;
                 track.NumDirectionMarkers = (int)numMarkers;
                 track.LoopClosureTime = (int)loopTime;
+                track.ReplayColliders = colliders;
                 track.EndAction = (Track.EndActions)selectedActionIndex;
                 
                 track.Modified = true;

@@ -26,9 +26,7 @@ namespace PersistentTrails
         public Rigidbody rbody;
         public Vector3 currentVelocity = Vector3.zero;
         private bool _isOffRails = false;
-        private bool offRailsInitiliazed = false;
-        private Vector3 worldUp = Vector3.zero; // will be updated in Update
-        private float gravity = 9.8f;
+        private bool offRailsInitiliazed = false;                
 
         public bool isOffRails
         {
@@ -84,8 +82,7 @@ namespace PersistentTrails
             if (!offRailsInitiliazed) // run once on each offRails activation
             {
                 if (rbody == null)
-                    setupRigidBody();
-                //playback = false;
+                    setupRigidBody();                
                 if (rbody == null) return;
                 rbody.isKinematic = false;
                 rbody.velocity = currentVelocity;
@@ -129,10 +126,9 @@ namespace PersistentTrails
                     currentReplayTime = 0;
                 else if (track.EndAction == Track.EndActions.OFFRAILS)
                 {
-                    isOffRails = true;
-                    //goOffRails();
+                    isOffRails = true;                    
                 }
-                //TODO add OFFRAILS handling here
+                // TODO: add DELETE ghost handling
             }
         }
 

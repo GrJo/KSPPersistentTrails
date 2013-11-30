@@ -200,7 +200,7 @@ namespace PersistentTrails
 
             GUILayout.BeginHorizontal();
             GUILayout.Label("Replay End Action:");
-            selectedActionIndex = GUILayout.SelectionGrid(selectedActionIndex, new string[] { "Stop", "Loop", "OffRails" }, 3);
+            selectedActionIndex = GUILayout.SelectionGrid(selectedActionIndex, new string[] { "Stop", "Loop", "OffRails", "Delete" }, 4);
             GUILayout.EndHorizontal();
 
             GUILayout.BeginHorizontal();

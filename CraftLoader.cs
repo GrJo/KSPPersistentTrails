@@ -99,7 +99,7 @@ namespace PersistentTrails
             return loadedList;
         }
 
-        public static GameObject assembleCraft(string craftName) // --- craftName not actually used yet. This should take a saved craft file name as input ---
+        public static GameObject assembleCraft(string craftName, bool collidersOn) // --- craftName not actually used yet. This should take a saved craft file name as input ---
         {
             GameObject craft = new GameObject();
             Debug.Log("asembling craft " + craftName);
@@ -129,6 +129,7 @@ namespace PersistentTrails
                 //Debug.Log("Part: " + pv.rotation);
                 //Debug.Log("Part: " + pv.scale);
             }
+            setColliderStateInChildren(craft, collidersOn);
             return craft;
         }
 
@@ -164,6 +165,21 @@ namespace PersistentTrails
             Debug.Log("Finding model " + partName + " failed, returning blank GameObject");
             return new GameObject();
         }
+
+        public static void setColliderStateInChildren(GameObject rootObject, bool newValue)
+        {
+            //disable colliders by setting them to isTrigger so you can still run code on them
+            Collider[] colliders = rootObject.GetComponentsInChildren<Collider>(true);
+            for (int i = 0; i < colliders.Length; i++)
+            {
+                colliders[i].isTrigger = !newValue;                
+            }
+        }
+
+        //public static void setColliderState(GameObject targetObject)
+        //{
+
+        //}
     }  
 
     public class PartValue

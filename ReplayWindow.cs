@@ -87,7 +87,8 @@ namespace PersistentTrails
                 rbody.isKinematic = false;
                 rbody.velocity = currentVelocity;
                 offRailsInitiliazed = true;
-            }
+                CraftLoader.setColliderStateInChildren(ghost, true);
+            }            
         }
 
         public void goOnRails()
@@ -95,6 +96,7 @@ namespace PersistentTrails
             _isOffRails = false;
             offRailsInitiliazed = false;
             Destroy(rbody);
+            CraftLoader.setColliderStateInChildren(ghost, false);
         }
 
         public void setupRigidBody()
@@ -163,7 +165,7 @@ namespace PersistentTrails
             {
                 try
                 {
-                    ghost = CraftLoader.assembleCraft(Utilities.CraftPath + track.VesselName + ".crf"); // --- add the craft file listed in the path, or selected from a menu ---
+                    ghost = CraftLoader.assembleCraft(Utilities.CraftPath + track.VesselName + ".crf", track.ReplayColliders); // --- add the craft file listed in the path, or selected from a menu ---
                 }
                 catch
                 {

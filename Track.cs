@@ -110,6 +110,7 @@ namespace PersistentTrails
         public String TrackName {get; set; }
         public String VesselName { get; set; }
         public String Description { get; set; }
+        public bool ReplayColliders { get; set; }
 
         public enum EndActions { STOP, LOOP, OFFRAILS, DELETE }
 

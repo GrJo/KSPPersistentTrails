@@ -139,8 +139,9 @@ namespace PersistentTrails
             //Debug.Log("looping through " + cfg.Length);
             for (int i = 0; i < cfg.Length; i++)
             {
-                if (partName == cfg[i].name)
-                {
+                string modfiedPartName = partName.Replace('.', '_');
+                if (modfiedPartName == cfg[i].name)
+                {                    
                     //Debug.Log("found this part: " + cfg[i].url);
                     //float scale = 0.1337f;
                     //float.TryParse(cfg[i].config.GetValue("scale"), out scale);

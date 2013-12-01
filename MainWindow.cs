@@ -13,6 +13,8 @@ namespace PersistentTrails
         //private TrackManager trackManager;
         ExplorerTrackBehaviour mainBehaviour;
 
+
+
         private TrackEditWindow currentlyOpenTrackEditWindow;
         //private ReplayWindow currentReplayWindow;
 
@@ -69,9 +71,17 @@ namespace PersistentTrails
 
             GUILayout.BeginVertical(); // BEGIN outer container
             GUILayout.BeginHorizontal();
-            if (GUILayout.Button("Create new Track")){
+
+            GUI.enabled = TrackManager.Instance.isRecordingAllowed();
+            string recordText = "create new Track";
+            if (!GUI.enabled)
+                recordText    = "[ - NO SIGNAL! -]";
+
+            if (GUILayout.Button(recordText)){
                 TrackManager.Instance.startNewTrack();
             }
+            GUI.enabled = true;
+
             if (GUILayout.Button("Stop recording")){
                 TrackManager.Instance.stopRecording();
             }
@@ -196,10 +206,12 @@ namespace PersistentTrails
                     }
                 }
 
+                GUI.enabled = TrackManager.Instance.isRecordingAllowed();            
                 if (GUILayout.Button(new GUIContent(continueTex, "resume track with current vessel"), GUIResources.ButtonStyle, GUILayout.Width(26), GUILayout.Height(26)))
                 {
                     TrackManager.Instance.continueTrack(track);
                 }
+                GUI.enabled = true;
 
                 if (GUILayout.Button(new GUIContent(editTex, "edit track properties"), GUIResources.ButtonStyle, GUILayout.Width(26), GUILayout.Height(26)))
                 {

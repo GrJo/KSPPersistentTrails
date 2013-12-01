@@ -27,7 +27,7 @@ namespace PersistentTrails
 
         private float recordingInterval;
         public float RecordingInterval { get { return recordingInterval; } set { recordingInterval = value; setupRepeatingUpdate(recordingInterval); } }
-        
+
 
         //Awake Event - when the DLL is loaded
         public ExplorerTrackBehaviour()
@@ -65,6 +65,11 @@ namespace PersistentTrails
             //trackManager.restoreTracksFromFile();
             setupRepeatingUpdate(recordingInterval);
             lastReferencePos = FlightGlobals.currentMainBody.GetWorldSurfacePosition(0, 0, 1000);
+            
+            
+            InvokeRepeating("checkGPS", 1, 1); //Cancel with CancelInvoke
+            
+
         }
 
         public void OnGUI() {
@@ -102,6 +107,11 @@ namespace PersistentTrails
         public void updateCurrentTrack()
         {
             TrackManager.Instance.updateCurrentTrack();
+        }
+
+        public void checkGPS()
+        {
+            TrackManager.Instance.checkGPS();
         }
 
         public void Update() { 
@@ -168,6 +178,10 @@ namespace PersistentTrails
         public List<Track> allTracks;
         private Track activeTrack;
         private bool recording;
+
+        private bool allowRecording; //Disabled if Figaro-GPS-Receiver is onboard, but not enough transmitters are available
+        public bool isRecordingAllowed() { return allowRecording; }
+
         //private ExplorerTrackBehaviour behaviour;
         public RecordingThresholds ChangeThresholds{get; set;}
 
@@ -289,7 +303,10 @@ namespace PersistentTrails
             //Debug.Log("TrackManager updateCurrentTrack()");
             if (recording)
             {
-                activeTrack.tryAddWaypoint(ChangeThresholds);
+                if (allowRecording)
+                    activeTrack.tryAddWaypoint(ChangeThresholds);
+                else
+                    stopRecording();
             }
         }
 
@@ -344,18 +361,37 @@ namespace PersistentTrails
             }
         }
 
-        //private bool gpsSignalAvailable() {
-        //    Vessel sourceVessel;
-        //    //check if sourceVessel has a gps receiver partModule
-        //    Part gpsReceiver = sourceVessel.Parts.Find(t => t.name == "FigaroGPSReceiver");
-        //    //gpsReceiver.Modules.
-        //    string signalStrength;
-        //    gpsReceiver.Fields.ReadValue("signalStrength", "");
-        //    //KSPField signalStrength;
-        //    //string units = signalStrength.guiUnits;
-        //    //TOdO parse
-            
-        //    //check if gps receiver has satellite fix
-        //}
+        public bool checkGPS()
+        {
+            Vessel vessel = FlightGlobals.ActiveVessel;
+            //check if sourceVessel has a gps receiver partModule
+            Part receiverPart = vessel.Parts.Find(t => t.name == "FigaroReceiver");
+
+            if (!receiverPart){
+
+                //Debug.Log("Found no GPSReceiver Part-aborting");
+                allowRecording = true; //Players not using FigaroGPS are unaffected
+                return true;
+            }
+
+            if(receiverPart.Modules.Contains("KerbalGPS")) {
+                PartModule receiverModule = receiverPart.Modules["KerbalGPS"];
+
+                //Debug.Log("Found KerbalGPS Module in ReceiverPart");
+                BaseField numSatField = receiverModule.Fields["guNumSats"];
+
+                //Debug.Log("Found num sats field: guiName=" + numSatField.guiName);
+                //Debug.Log("checking value(host=receiverModule)=" + numSatField.GetValue(receiverModule));
+                int numSats = int.Parse(numSatField.GetValue(receiverModule).ToString());
+                if (numSats >= 4)
+                {
+                    allowRecording = true;
+                    return true;
+                }
+            }
+
+            allowRecording = false;
+            return false;
+        }//
     }
 }

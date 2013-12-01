@@ -598,6 +598,19 @@ namespace PersistentTrails
                         position = Vector3.Lerp(start, end, progress);
                         orientation = Quaternion.Lerp(waypoints[i].orientation, waypoints[i + 1].orientation, progress); //Lerp is faster, maybe use the more accurate Slerp for better results?
                         velocity = Vector3.Lerp(waypoints[i].velocity, waypoints[i + 1].velocity, progress); //Lerp is faster, maybe use the more accurate Slerp for better results?
+
+                        if (float.IsNaN(orientation.x))
+                            orientation.x = 0;
+
+                        if (float.IsNaN(orientation.y))
+                            orientation.y = 0;
+
+                        if (float.IsNaN(orientation.z))
+                            orientation.z = 0;
+
+                        if (float.IsNaN(orientation.w))
+                            orientation.w = 0;
+
                         break;
                     }
                 }
@@ -870,7 +883,7 @@ namespace PersistentTrails
                 Double.TryParse(split[1], out lon);
                 Double.TryParse(split[2], out alt);
                 Double.TryParse(split[3], out time);
-                waypoints.Add(new Waypoint(lat, lon, alt, new Quaternion(), new Vector3(), time));
+                waypoints.Add(new Waypoint(lat, lon, alt, Quaternion.identity, new Vector3(), time));
                 line = reader.ReadLine();
             }
 
@@ -891,7 +904,7 @@ namespace PersistentTrails
                     Double.TryParse(split[1], out lon);
                     Double.TryParse(split[2], out alt);
                     Double.TryParse(split[3], out time);
-                    logEntries.Add(new LogEntry(lat, lon, alt, new Quaternion(), new Vector3(), time, split[4], split[5]));
+                    logEntries.Add(new LogEntry(lat, lon, alt, Quaternion.identity, new Vector3(), time, split[4], split[5]));
                 }
                 line = reader.ReadLine();
             }

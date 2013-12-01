@@ -143,6 +143,8 @@ namespace PersistentTrails
             ghost.transform.position = trackPos;
             ghost.transform.rotation = orientation;
             currentVelocity = velocity;
+
+            //Debug.Log("Replay: Ghost at " + trackPos.ToString() + " with ori=" + orientation.ToString());
         }
     }
 
@@ -159,7 +161,7 @@ namespace PersistentTrails
         Texture2D stopTex;
 
         public ReplayWindow(Track track) : base("Replay Track: " + track.TrackName) {
-            Mesh sphere = MeshFactory.createSphere();
+            
             bool loadCraft = true;
             if (loadCraft)
             {
@@ -169,12 +171,14 @@ namespace PersistentTrails
                 }
                 catch
                 {
+                    //Debug.Log("ERROR LOADING CRF, FALLING BACK TO SPHERE");
                     loadCraft = false;
                 }
             }
             
             if (!loadCraft)
             {
+                Mesh sphere = MeshFactory.createSphere();
                 ghost = MeshFactory.makeMeshGameObject(ref sphere, "Track playback sphere");
                 ghost.transform.localScale = new Vector3(track.ConeRadiusToLineWidthFactor * track.LineWidth, track.ConeRadiusToLineWidthFactor * track.LineWidth, track.ConeRadiusToLineWidthFactor * track.LineWidth);
                 //ghost.collider.enabled = false;

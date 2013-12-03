@@ -64,7 +64,7 @@ namespace PersistentTrails
 
             //trackManager.restoreTracksFromFile();
             setupRepeatingUpdate(recordingInterval);
-            lastReferencePos = FlightGlobals.currentMainBody.GetWorldSurfacePosition(0, 0, 1000);
+            lastReferencePos = new Vector3(0,0,0);
             
             
             InvokeRepeating("checkGPS", 1, 1); //Cancel with CancelInvoke

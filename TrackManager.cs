@@ -374,6 +374,7 @@ namespace PersistentTrails
                 return true;
             }
 
+            //Debug.Log("found GPSReceiverpart");
             if(receiverPart.Modules.Contains("KerbalGPS")) {
                 PartModule receiverModule = receiverPart.Modules["KerbalGPS"];
 

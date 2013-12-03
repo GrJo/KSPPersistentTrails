@@ -30,15 +30,19 @@ namespace PersistentTrails
                     referenceFrame.rotation = vessel.transform.rotation;
                     foreach (Part part in vessel.parts)
                     {
-                        PartValue newPartValue = new PartValue();
-                        newPartValue.scale = 1f / part.scaleFactor;
-                        localTransform.rotation = part.transform.rotation;
-                        localTransform.position = part.transform.position;
-                        newPartValue.position = localTransform.localPosition;
-                        newPartValue.rotation = localTransform.localRotation;
-                        newPartValue.partName = part.name.Split(' ')[0];
-                        if (fetchModel) newPartValue.model = findPartModel(newPartValue.partName);
-                        partList.Add(newPartValue);
+                        if (part.name != "launchClamp1" && part.partName != "StrutConnector")
+                        {
+                            Debug.Log("getParts: part.partName " + part.partName);
+                            PartValue newPartValue = new PartValue();
+                            newPartValue.scale = 1f / part.scaleFactor;
+                            localTransform.rotation = part.transform.rotation;
+                            localTransform.position = part.transform.position;
+                            newPartValue.position = localTransform.localPosition;
+                            newPartValue.rotation = localTransform.localRotation;
+                            newPartValue.partName = part.name.Split(' ')[0];
+                            if (fetchModel) newPartValue.model = findPartModel(newPartValue.partName);
+                            partList.Add(newPartValue);
+                        }
                     }
                     //Debug.Log("partList count: " + partList.Count);
                 }
@@ -115,7 +119,7 @@ namespace PersistentTrails
             }
             foreach (PartValue pv in pvList)
             {
-                //Debug.Log("pv.name is " + pv.partName);
+                //Debug.Log("pv.partName is " + pv.partName);
                 pv.model.SetActive(true);
                 //Debug.Log("pv.model exists");
                 pv.model.transform.parent = craft.transform;

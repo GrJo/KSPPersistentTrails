@@ -55,6 +55,7 @@
     <Compile Include="MainWindow.cs" />
     <Compile Include="RecordingThresholds.cs" />
     <Compile Include="ReplayWindow.cs" />
+    <Compile Include="TireTrail.cs" />
     <Compile Include="TireTracker.cs" />
     <Compile Include="Track.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

@@ -42,6 +42,9 @@ namespace PersistentTrails
         public static int trackFileFormat = 1;
         //public static Vector2 DebugScrollPosition = Vector2.zero;
 
+        public static bool debugMode = true;
+        public static DebugMessages debug = new DebugMessages(debugMode, DebugMessages.OutputMode.log, 0f);
+
         //creates a unique track name
         // renaming = true: renaming existing track (ignore the first occurrence of that name)
         public static string makeUniqueTrackName(string name, ref List<Track> trackList, bool renaming)

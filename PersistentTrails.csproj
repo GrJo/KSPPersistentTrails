@@ -50,6 +50,7 @@
   <ItemGroup>
     <Compile Include="ColorPicker.cs" />
     <Compile Include="CraftLoader.cs" />
+    <Compile Include="DebugMessages.cs" />
     <Compile Include="MeshFactory.cs" />
     <Compile Include="LogEntryWindow.cs" />
     <Compile Include="MainWindow.cs" />

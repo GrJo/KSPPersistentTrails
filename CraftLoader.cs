@@ -30,17 +30,23 @@ namespace PersistentTrails
                     referenceFrame.rotation = vessel.transform.rotation;
                     foreach (Part part in vessel.parts)
                     {
-                        PartValue newPartValue = new PartValue();
-                        newPartValue.scale = 1f / part.scaleFactor;
-                        localTransform.rotation = part.transform.rotation;
-                        localTransform.position = part.transform.position;
-                        newPartValue.position = localTransform.localPosition;
-                        newPartValue.rotation = localTransform.localRotation;
-                        newPartValue.partName = part.name.Split(' ')[0];
-                        if (fetchModel) newPartValue.model = findPartModel(newPartValue.partName);
-                        partList.Add(newPartValue);
-                    }
-                    //Debug.Log("partList count: " + partList.Count);
+                        if (part.name == "launchClamp1" || part.partName == "StrutConnector")
+                        {
+                            Utilities.debug.debugMessage("Excluding part from crf file: " + part.name);                            
+                        }
+                        else
+                        {                            
+                            PartValue newPartValue = new PartValue();
+                            newPartValue.scale = 1f / part.scaleFactor;
+                            localTransform.rotation = part.transform.rotation;
+                            localTransform.position = part.transform.position;
+                            newPartValue.position = localTransform.localPosition;
+                            newPartValue.rotation = localTransform.localRotation;
+                            newPartValue.partName = part.name.Split(' ')[0];
+                            if (fetchModel) newPartValue.model = findPartModel(newPartValue.partName);
+                            partList.Add(newPartValue);
+                        }
+                    }                    
                 }
             }
             return partList;
@@ -76,7 +82,7 @@ namespace PersistentTrails
             string newLine = string.Empty;
             int craftFileFormat = 0;
             int.TryParse(stream.ReadLine(), out craftFileFormat);
-            Debug.Log(String.Concat("Loading crf file, format ", craftFileFormat, ", ", fileName));
+            Utilities.debug.debugMessage(String.Concat("Loading crf file, format ", craftFileFormat, ", ", fileName));
             try
             {
                 while (!stream.EndOfStream && !(newLine == "[EOF]"))
@@ -94,7 +100,7 @@ namespace PersistentTrails
             }
             catch (Exception e)
             {
-                Debug.Log("load craft file error: " + e.ToString());
+                Utilities.debug.debugMessage("load craft file error: " + e.ToString());
             }
             return loadedList;
         }
@@ -102,7 +108,7 @@ namespace PersistentTrails
         public static GameObject assembleCraft(string craftName, bool collidersOn) // --- craftName not actually used yet. This should take a saved craft file name as input ---
         {
             GameObject craft = new GameObject();
-            Debug.Log("asembling craft " + craftName);
+            Utilities.debug.debugMessage("asembling craft " + craftName);
             List<PartValue> pvList;
             //List<PartValue> pvList = getParts(FlightGlobals.ActiveVessel, true); // load the craft file here into a partValue list
             try
@@ -115,7 +121,7 @@ namespace PersistentTrails
             }
             foreach (PartValue pv in pvList)
             {
-                //Debug.Log("pv.name is " + pv.partName);
+                //Debug.Log("pv.partName is " + pv.partName);
                 pv.model.SetActive(true);
                 //Debug.Log("pv.model exists");
                 pv.model.transform.parent = craft.transform;
@@ -163,7 +169,7 @@ namespace PersistentTrails
                     }
                 }
             }
-            Debug.Log("Finding model " + partName + " failed, returning blank GameObject");
+            Utilities.debug.debugMessage("Finding model " + partName + " failed, returning blank GameObject");
             return new GameObject();
         }
 

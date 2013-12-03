@@ -115,7 +115,7 @@ namespace PersistentTrails
         public enum EndActions { STOP, LOOP, OFFRAILS, DELETE }
 
         public EndActions EndAction { get; set; }
-        public int LoopClosureTime { get; set; }
+        public float LoopClosureTime { get; set; }
         
         public Track() 
         {
@@ -158,7 +158,7 @@ namespace PersistentTrails
             directionMarkerMesh = MeshFactory.createCone(1,2,12);
 
             EndAction = EndActions.STOP;
-            LoopClosureTime = 0;
+            LoopClosureTime = 0f;
 
             for (int i = 0; i < 20; ++i)
             {
@@ -782,7 +782,7 @@ namespace PersistentTrails
                         if (EndAction == EndActions.LOOP)
                         {
                             //Debug.Log("LOOP endaction: Parsing string for looptime=" + lineSplit[2]); 
-                            LoopClosureTime = int.Parse(lineSplit[2]);
+                            LoopClosureTime = float.Parse(lineSplit[2]);
                         }
                     } 
 

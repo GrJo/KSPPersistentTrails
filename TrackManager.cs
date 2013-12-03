@@ -237,14 +237,16 @@ namespace PersistentTrails
         public void stopRecording()
         {
             //if (activeTrack.EndAction == Track.EndActions.LOOP)
-            Vector3 startPos = Vector3.zero;
-            Vector3 endPos = Vector3.zero;
-            Vector3 vel = Vector3.zero;
-            Quaternion rot = Quaternion.identity;
-            activeTrack.evaluateAtTime(activeTrack.GetStartTime(), out startPos, out rot, out vel);
-            activeTrack.evaluateAtTime(activeTrack.GetEndTime(), out endPos, out rot, out vel);
-            activeTrack.LoopClosureTime = Vector3.Distance(startPos, endPos) / vel.magnitude;
-
+            if (activeTrack != null)
+            {
+                Vector3 startPos = Vector3.zero;
+                Vector3 endPos = Vector3.zero;
+                Vector3 vel = Vector3.zero;
+                Quaternion rot = Quaternion.identity;
+                activeTrack.evaluateAtTime(activeTrack.GetStartTime(), out startPos, out rot, out vel);
+                activeTrack.evaluateAtTime(activeTrack.GetEndTime(), out endPos, out rot, out vel);
+                activeTrack.LoopClosureTime = Vector3.Distance(startPos, endPos) / vel.magnitude;
+            }
             activeTrack = null;
             recording = false;
         }

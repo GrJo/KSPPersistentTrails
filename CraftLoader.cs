@@ -30,7 +30,7 @@ namespace PersistentTrails
                     referenceFrame.rotation = vessel.transform.rotation;
                     foreach (Part part in vessel.parts)
                     {
-                        if (part.name == "launchClamp1" || part.partName == "StrutConnector")
+                        if (part.name == "launchClamp1" || part.partName == "StrutConnector" || part.partName == "FuelLine")
                         {
                             Utilities.debug.debugMessage("Excluding part from crf file: " + part.name);                            
                         }

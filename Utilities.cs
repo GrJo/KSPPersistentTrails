@@ -313,7 +313,7 @@ namespace PersistentTrails
 
     public static class GUIResources
     {
-        public static string VERSION = "v1.0.2";
+        public static string VERSION = "v1.1";
         public static Texture2D IconRecording = new Texture2D(32, 32, TextureFormat.ARGB32, false);
         public static Texture2D IconNoRecording = new Texture2D(32, 32, TextureFormat.ARGB32, false);
 

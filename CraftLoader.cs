@@ -100,7 +100,8 @@ namespace PersistentTrails
             }
             catch (Exception e)
             {
-                Utilities.debug.debugMessage("load craft file error: " + e.ToString());
+                //Utilities.debug.debugMessage("load craft file error: " + e.ToString());
+                Utilities.debug.debugMessage("Got expected exception from streamreader, part list done");
             }
             return loadedList;
         }

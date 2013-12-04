@@ -180,8 +180,24 @@ namespace PersistentTrails
             Collider[] colliders = rootObject.GetComponentsInChildren<Collider>(true);
             for (int i = 0; i < colliders.Length; i++)
             {
-                colliders[i].isTrigger = !newValue;                
+                colliders[i].isTrigger = !newValue;
+                colliders[i].material = getPhysicMaterial();
             }
+        }
+
+        private static PhysicMaterial ghostPhysicMaterial;
+        public static PhysicMaterial getPhysicMaterial()
+        {
+            if (ghostPhysicMaterial == null)
+            {
+                ghostPhysicMaterial = new PhysicMaterial("ghostPhysicMat");
+                ghostPhysicMaterial.dynamicFriction = 0.3f;
+                ghostPhysicMaterial.dynamicFriction2 = 0.3f;
+                ghostPhysicMaterial.frictionCombine = PhysicMaterialCombine.Average;
+                ghostPhysicMaterial.staticFriction = 0.3f;
+                ghostPhysicMaterial.staticFriction2 = 0.3f;
+            }
+            return ghostPhysicMaterial;
         }
 
         //public static void setColliderState(GameObject targetObject)

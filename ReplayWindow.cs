@@ -26,7 +26,8 @@ namespace PersistentTrails
         public Rigidbody rbody;
         public Vector3 currentVelocity = Vector3.zero;
         private bool _isOffRails = false;
-        private bool offRailsInitiliazed = false;                
+        private bool offRailsInitiliazed = false;
+        private OffRailsObject offRailsObject;       
 
         public bool isOffRails
         {
@@ -85,9 +86,13 @@ namespace PersistentTrails
                     setupRigidBody();                
                 if (rbody == null) return;
                 rbody.isKinematic = false;
-                rbody.velocity = currentVelocity;
+                rbody.velocity = currentVelocity;                
                 offRailsInitiliazed = true;
                 CraftLoader.setColliderStateInChildren(ghost, true);
+                if (offRailsObject == null)
+                    offRailsObject = ghost.AddComponent<OffRailsObject>();
+                else
+                    offRailsObject.enabled = true;
             }            
         }
 
@@ -97,6 +102,10 @@ namespace PersistentTrails
             offRailsInitiliazed = false;
             Destroy(rbody);
             CraftLoader.setColliderStateInChildren(ghost, false);
+            if (offRailsObject != null)
+            {
+                offRailsObject.enabled = false;
+            }
         }
 
         public void setupRigidBody()
@@ -104,7 +113,7 @@ namespace PersistentTrails
             Debug.Log("Adding rigidbody to playback ghost");
             rbody = gameObject.AddComponent<Rigidbody>();
             rbody.mass = 3.0f;
-            rbody.drag = 0.05f;
+            rbody.drag = 0.01f;
             rbody.useGravity = true;
             rbody.isKinematic = false;
         }

@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using UnityEngine;
+using Toolbar;
 
 namespace PersistentTrails
 {
@@ -22,14 +23,12 @@ namespace PersistentTrails
         private Vector3 lastReferencePos;
 
         MainWindow mainWindow;
-        bool ShouldBeInPostDrawQueue = false;
-        bool IsInPostDrawQueue = false;
 
         private float recordingInterval;
         public float RecordingInterval { get { return recordingInterval; } set { recordingInterval = value; setupRepeatingUpdate(recordingInterval); } }
 
+        private IButton mainWindowButton;
 
-        //Awake Event - when the DLL is loaded
         public ExplorerTrackBehaviour()
         {
             mainWindow = new MainWindow(this);
@@ -41,7 +40,7 @@ namespace PersistentTrails
             Debug.Log("ExplorerTrackBehaviour destructor");
             //trackManager = null;
             mainWindow = null;
-
+            mainWindowButton.Destroy();
         }
 
         //Called once everything else is loaded, just before the first execution tick 
@@ -57,50 +56,43 @@ namespace PersistentTrails
             //KSP.IO.PluginConfiguration configfile = KSP.IO.PluginConfiguration.CreateForType<ExplorerTrackBehaviour>();
             //configfile.load();
 
-            //ManifestPosition = PrevManifestPosition = configfile.GetValue<Rect>("ManifestPosition");
-            //TransferPosition = PrevTransferPosition = configfile.GetValue<Rect>("TransferPosition");
-            //RosterPosition = PrevRosterPosition = configfile.GetValue<Rect>("RosterPosition");
-            //ButtonPosition = PrevButtonPosition = configfile.GetValue<Rect>("ButtonPosition");
-
             //trackManager.restoreTracksFromFile();
             setupRepeatingUpdate(recordingInterval);
             lastReferencePos = new Vector3(0,0,0);
             
             
             InvokeRepeating("checkGPS", 1, 1); //Cancel with CancelInvoke
-            
+
+            mainWindowButton = ToolbarManager.Instance.add("PersistentTrails", "mainWindowButton");
+            mainWindowButton.TexturePath = "PersistentTrails/Icons/Main-NoRecording";// GUIResources.IconNoRecordingPath;
+            mainWindowButton.ToolTip = "Persistent Trails - toggle main window";
+            mainWindowButton.Visibility = new GameScenesVisibility(GameScenes.FLIGHT);
+            mainWindowButton.OnClick += (e) =>
+            {
+                Debug.Log("button1 clicked, mouseButton: " + e.MouseButton);
+                mainWindow.ToggleVisible();
+            };
+
 
         }
 
+        public void updateMainIcon() {
+
+            if (TrackManager.Instance.IsRecording)
+                mainWindowButton.TexturePath = GUIResources.IconRecordingPath;
+            else
+                mainWindowButton.TexturePath = GUIResources.IconNoRecordingPath;
+        }
+
         public void OnGUI() {
-
-            //Do the GUI Stuff - basically get the workers draw stuff into the postrendering queue
-            //If the two flags are different are we going in or out of the queue
-            if (ShouldBeInPostDrawQueue != IsInPostDrawQueue)
-            {
-                if (ShouldBeInPostDrawQueue /* && !IsInPostDrawQueue*/)
-                {
-                    //Add to the queue
-                    RenderingManager.AddToPostDrawQueue(5, DrawGUI);
-                    IsInPostDrawQueue = true;
-                }
-                else
-                {
-                    RenderingManager.RemoveFromPostDrawQueue(5, DrawGUI);
-                    IsInPostDrawQueue = false;
-                }
-            }
-
+            updateMainIcon();
             TrackManager.Instance.updateAllLabelPositions();
-
-
         }
 
         public void setupRepeatingUpdate(float updateIntervalSeconds)
         {
             CancelInvoke("updateCurrentTrack");
             InvokeRepeating("updateCurrentTrack", updateIntervalSeconds, updateIntervalSeconds); //Cancel with CancelInvoke
-            //StartCoroutine(coroutineUpdate());
         }
 
         //Called via MonoBehavious.InvokeRepeating
@@ -124,53 +116,12 @@ namespace PersistentTrails
                 lastReferencePos = newReferencePos;
             }
 
-            if (HighLogic.LoadedScene == GameScenes.FLIGHT)
-            {
-                ShouldBeInPostDrawQueue = true;
-            }
-            else
-            {
-                ShouldBeInPostDrawQueue = false;
-            }
-
-            //if ((LastGameUT != 0) && (LastGameUT > Planetarium.GetUniversalTime()))
-            //{
-            //    KACWorker.DebugLogFormatted("Time Went Backwards - Load or restart - resetting inqueue flag");
-            //    ShouldBeInPostDrawQueue = false;
-            //}
             //TireRecorder.Instance.update();
 
             // --- TEST CRAFT SERIALIZE ---
             //if (Input.GetKeyDown(KeyCode.F8))
             //    CraftLoader.saveCraftToFile();
         }
-
-        public void DrawGUI()
-        {
-            GUIResources.SetupGUI();
-            //Debug.Log("DrawMainButton");
-            
-
-            if (HighLogic.LoadedScene == GameScenes.FLIGHT)
-            {
-                var icon = TrackManager.Instance.IsRecording ? GUIResources.IconRecording : GUIResources.IconNoRecording;
-
-                //Debug.Log("loaded button icon");
-                //Debug.Log("Rect: " + Resources.mainButtonPosition.ToString());
-                //Debug.Log("IconStyle: " + Resources.IconStyle.ToString());
-                if (GUI.Button(GUIResources.mainButtonPosition, new GUIContent(icon, "ExplorerTracks MainWindow"), GUIResources.IconStyle))
-                {
-
-                    //Debug.Log("toggling mainGui");
-                    mainWindow.ToggleVisible();
-                }
-
-
-            }
-
-            
-        }
-
 
     }
 

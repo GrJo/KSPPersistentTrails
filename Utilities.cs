@@ -36,6 +36,7 @@ namespace PersistentTrails
     {
         public static String AppPath = KSPUtil.ApplicationRootPath.Replace("\\", "/");
         public static String PlugInDataPath = AppPath + "GameData/PersistentTrails/PluginData/";
+        public static String PlugInIconPath = AppPath + "GameData/PersistentTrails/Icons/";
         public static String TrackPath = PlugInDataPath + "Tracks/";
         public static String CraftPath = PlugInDataPath + "Craft/";
         public static int craftFileFormat = 1;
@@ -84,22 +85,22 @@ namespace PersistentTrails
         {
             if (File.Exists(PlugInDataPath + fileName))
             {
-                Debug.Log(String.Format("Loading Texture - file://{0}{1}", PlugInDataPath, fileName));
-                WWW img1 = new WWW(String.Format("file://{0}{1}", PlugInDataPath, fileName));
+                Debug.Log(String.Format("Loading Texture - file://{0}{1}", PlugInIconPath, fileName));
+                WWW img1 = new WWW(String.Format("file://{0}{1}", PlugInIconPath, fileName));
                 //Debug.Log("image loaded");
                 img1.LoadImageIntoTexture(tex);
                 //Debug.Log("image in texture");
             }
             else {
-                Debug.LogWarning("File does not exist: " + PlugInDataPath + fileName);
+                Debug.LogWarning("File does not exist: " + PlugInIconPath + fileName);
             }
         }
 
         public static Texture2D LoadImage(string filename, int width, int height)
         {
-            if (File.Exists(PlugInDataPath + filename))
+            if (File.Exists(PlugInIconPath + filename))
             {
-                var bytes = File.ReadAllBytes(PlugInDataPath + filename);
+                var bytes = File.ReadAllBytes(PlugInIconPath + filename);
                 //Debug.Log("image bytes read");
                 Texture2D texture = new Texture2D(width, height, TextureFormat.ARGB32, false);
                 //Debug.Log("texture created");
@@ -314,8 +315,11 @@ namespace PersistentTrails
     public static class GUIResources
     {
         public static string VERSION = "v1.1";
-        public static Texture2D IconRecording = new Texture2D(32, 32, TextureFormat.ARGB32, false);
-        public static Texture2D IconNoRecording = new Texture2D(32, 32, TextureFormat.ARGB32, false);
+        //public static Texture2D IconRecording = new Texture2D(32, 32, TextureFormat.ARGB32, false);
+        public static string IconRecordingPath = "PersistentTrails/Icons/Main-Recording"; //loaded via gamedatabase, no ending required
+
+        //public static Texture2D IconNoRecording = new Texture2D(32, 32, TextureFormat.ARGB32, false);
+        public static string IconNoRecordingPath = "PersistentTrails/Icons/Main-NoRecording";
 
         public static GUIStyle WindowStyle;
         public static GUIStyle IconStyle;
@@ -351,8 +355,8 @@ namespace PersistentTrails
 
         public static void LoadAssets()
         {
-            Utilities.LoadTexture(ref IconNoRecording, "Main-NoRecording.png");
-            Utilities.LoadTexture(ref IconRecording, "Main-Recording.png");
+            //Utilities.LoadTexture(ref IconNoRecording, "Main-NoRecording.png");
+            //Utilities.LoadTexture(ref IconRecording, "Main-Recording.png");
         }
 
         public static void SetStyles()

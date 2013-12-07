@@ -78,7 +78,7 @@ namespace PersistentTrails
                 recordText    = "[ - NO SIGNAL! -]";
 
             if (GUILayout.Button(recordText)){
-                TrackManager.Instance.startNewTrack();
+                TrackManager.Instance.startNewTrack();              
             }
             GUI.enabled = true;
 

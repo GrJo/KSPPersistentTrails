@@ -350,11 +350,16 @@ namespace PersistentTrails
                 {
                     allowRecording = true;
                     return true;
+                } else {
+                    allowRecording = false;
+                    return false;
                 }
-            }
+            } //endif module found
 
-            allowRecording = false;
-            return false;
+            //Module not found - OLD FigaroGPS version
+            allowRecording = true;
+            return true;
+
         }//
     }
 }

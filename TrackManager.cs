@@ -65,7 +65,7 @@ namespace PersistentTrails
 
             mainWindowButton = ToolbarManager.Instance.add("PersistentTrails", "mainWindowButton");
             mainWindowButton.TexturePath = "PersistentTrails/Icons/Main-NoRecording";// GUIResources.IconNoRecordingPath;
-            mainWindowButton.ToolTip = "Persistent Trails - toggle main window";
+            mainWindowButton.ToolTip = "Persistent Trails";
             mainWindowButton.Visibility = new GameScenesVisibility(GameScenes.FLIGHT);
             mainWindowButton.OnClick += (e) =>
             {

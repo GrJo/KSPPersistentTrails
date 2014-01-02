@@ -137,6 +137,7 @@ namespace PersistentTrails
                 //Debug.Log("Part: " + pv.scale);
             }
             setColliderStateInChildren(craft, collidersOn);
+            setLightStateInChildren(craft, false);
             return craft;
         }
 
@@ -182,6 +183,15 @@ namespace PersistentTrails
             {
                 colliders[i].isTrigger = !newValue;
                 colliders[i].material = getPhysicMaterial();
+            }
+        }
+
+        public static void setLightStateInChildren(GameObject rootObject, bool newValue)
+        {
+            Light[] lights = rootObject.GetComponentsInChildren<Light>(true);
+            for (int i = 0; i < lights.Length; i++)
+            {
+                lights[i].enabled = newValue;                
             }
         }
 

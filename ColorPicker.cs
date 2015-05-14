@@ -11,8 +11,8 @@ namespace PersistentTrails
     {
 
         private Texture2D colorTexture;
-        private int ImageWidth = 200;
-        private int ImageHeight = 100;
+        private int ImageWidth = 234;
+        private int ImageHeight = 199;
 
         private TrackEditWindow editWindow;
 
@@ -25,7 +25,7 @@ namespace PersistentTrails
             windowPos = new Rect(350, 30, 220, 120);
             SetResizeX(false);
             SetResizeY(false);
-            SetSize(220, 120);
+            SetSize(250, 250);
         }
 
 

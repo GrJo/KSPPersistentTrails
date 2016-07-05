@@ -76,12 +76,12 @@ namespace PersistentTrails
                 tireObject = MeshFactory.makeMeshGameObject(ref m, "TireObject");
 
                 //TODO texture
-                tireObject.renderer.material = new Material(Shader.Find("KSP/Emissive/Diffuse"));
-                tireObject.renderer.renderer.castShadows = false;
-                tireObject.renderer.renderer.receiveShadows = false;
+                tireObject.GetComponent<Renderer>().material = new Material(Shader.Find("KSP/Emissive/Diffuse"));
+                tireObject.GetComponent<Renderer>().shadowCastingMode = UnityEngine.Rendering.ShadowCastingMode.Off;
+                tireObject.GetComponent<Renderer>().receiveShadows = false;
 
 
-                tireObject.renderer.material.SetColor("_EmissiveColor", Color.red);
+                tireObject.GetComponent<Renderer>().material.SetColor("_EmissiveColor", Color.red);
 
                 tires.Add(tire, tireObject);
                 //.renderer.material.te

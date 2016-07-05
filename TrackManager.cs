@@ -20,9 +20,14 @@ namespace PersistentTrails
     public class ExplorerTrackBehaviour :  MonoBehaviour
     {
         //private TrackManager trackManager;
+        public static ExplorerTrackBehaviour Instance;
         private Vector3 lastReferencePos;
 
-        MainWindow mainWindow;
+        internal MainWindow mainWindow;
+        internal LogEntryWindow logEntryWindow;
+        internal ReplayWindow replaywindow;
+        internal ColorPicker colorDlg;
+        internal TrackEditWindow currentlyOpenTrackEditWindow;
 
         private float recordingInterval;
         public float RecordingInterval { get { return recordingInterval; } set { recordingInterval = value; setupRepeatingUpdate(recordingInterval); } }
@@ -31,6 +36,7 @@ namespace PersistentTrails
 
         public ExplorerTrackBehaviour()
         {
+            Instance = this;
             mainWindow = new MainWindow(this);
             recordingInterval = 5;
         }
@@ -86,6 +92,11 @@ namespace PersistentTrails
 
         public void OnGUI() {
             updateMainIcon();
+            mainWindow?.OnGUI();
+            logEntryWindow?.OnGUI();
+            replaywindow?.OnGUI();
+            colorDlg?.OnGUI();
+            currentlyOpenTrackEditWindow?.OnGUI();
             TrackManager.Instance.updateAllLabelPositions();
         }
 

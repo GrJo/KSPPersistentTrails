@@ -26,12 +26,13 @@
  */
 
 using System;
+using KSP.UI.Dialogs;
 using UnityEngine;
 using PersistentTrails;
 
 namespace Tac
 {
-    abstract class Window<T>
+    public abstract class Window<T>
     {
         private string windowTitle;
         private int windowId;
@@ -80,21 +81,6 @@ namespace Tac
 
         public virtual void SetVisible(bool newValue)
         {
-            if (newValue)
-            {
-                if (!visible)
-                {
-                    RenderingManager.AddToPostDrawQueue(3, new Callback(DrawWindow));
-                }
-            }
-            else
-            {
-                if (visible)
-                {
-                    RenderingManager.RemoveFromPostDrawQueue(3, new Callback(DrawWindow));
-                }
-            }
-
             this.visible = newValue;
         }
 
@@ -166,6 +152,14 @@ namespace Tac
             else
             {
                 return false;
+            }
+        }
+
+        public void OnGUI()
+        {
+            if (visible)
+            {
+                DrawWindow();
             }
         }
 

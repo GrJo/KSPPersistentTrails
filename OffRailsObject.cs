@@ -103,29 +103,29 @@ namespace PersistentTrails
                 //Utilities.debug.debugMessage("No main body");
                 return;
             }
-            if (buoyancyForce > 0f && mainBody.ocean && rigidbody != null)
+            if (buoyancyForce > 0f && mainBody.ocean && GetComponent<Rigidbody>() != null)
             {
                 float seaAltitude = Vector3.Distance(mainBody.position, gameObject.transform.position) - (float)mainBody.Radius;
                 if (seaAltitude < 0f)
                 {
-                    rigidbody.drag = dragInWater;
+                    GetComponent<Rigidbody>().drag = dragInWater;
                     float floatMultiplier = Mathf.Max(0f, -Mathf.Max(seaAltitude, -buoyancyRange)) / buoyancyRange;
                     if (floatMultiplier > 0f)
                     {
                         Vector3 up = (gameObject.transform.position - mainBody.position).normalized;
                         Vector3 upLift = up * buoyancyForce * floatMultiplier;                        
 
-                        float verticalSpeed = Vector3.Dot(gameObject.rigidbody.velocity, up) * gameObject.rigidbody.velocity.magnitude;
+                        float verticalSpeed = Vector3.Dot(gameObject.GetComponent<Rigidbody>().velocity, up) * gameObject.GetComponent<Rigidbody>().velocity.magnitude;
 
                         if (verticalSpeed < maxVerticalSpeed)
                         {
-                            gameObject.rigidbody.AddForce(upLift * Time.deltaTime * 50f); // *50 compensates for the deltaTime reduction, so I can use familiar values
+                            gameObject.GetComponent<Rigidbody>().AddForce(upLift * Time.deltaTime * 50f); // *50 compensates for the deltaTime reduction, so I can use familiar values
                         }
                     }
                 }
                 else
                 {
-                    rigidbody.drag = dragInAir;
+                    GetComponent<Rigidbody>().drag = dragInAir;
                 }
             }
         }

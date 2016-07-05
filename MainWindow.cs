@@ -13,9 +13,6 @@ namespace PersistentTrails
         //private TrackManager trackManager;
         ExplorerTrackBehaviour mainBehaviour;
 
-
-
-        private TrackEditWindow currentlyOpenTrackEditWindow;
         //private ReplayWindow currentReplayWindow;
 
         private Vector2 trackListScroll;
@@ -28,7 +25,7 @@ namespace PersistentTrails
         Texture2D playbackTex;
 
         List<Texture2D> trackColorTextures;
-
+        
         //private WindowResizer resizer = new WindowResizer(
         //            new Rect(50, 255, 380, 240),
         //            new Vector2(380, 240));
@@ -91,8 +88,8 @@ namespace PersistentTrails
             if (GUILayout.Button("Add Log Entry to current Path")){
                 if (TrackManager.Instance.IsRecording)
                 {
-                    LogEntryWindow logEntryWindow = new LogEntryWindow(TrackManager.Instance);
-                    logEntryWindow.SetVisible(true);
+                    ExplorerTrackBehaviour.Instance.logEntryWindow = new LogEntryWindow(TrackManager.Instance);
+                    ExplorerTrackBehaviour.Instance.logEntryWindow.SetVisible(true);
                 }
                 else {
                     Debug.Log("Cannot add a Log Entry - no track is active/beeing recorded");
@@ -215,23 +212,24 @@ namespace PersistentTrails
 
                 if (GUILayout.Button(new GUIContent(editTex, "edit track properties"), GUIResources.ButtonStyle, GUILayout.Width(26), GUILayout.Height(26)))
                 {
-                    if (currentlyOpenTrackEditWindow != null)
-                        currentlyOpenTrackEditWindow.SetVisible(false);
+                    if (ExplorerTrackBehaviour.Instance.currentlyOpenTrackEditWindow != null)
+                        ExplorerTrackBehaviour.Instance.currentlyOpenTrackEditWindow.SetVisible(false);
 
-                    currentlyOpenTrackEditWindow = new TrackEditWindow(track, this);
-                    currentlyOpenTrackEditWindow.SetVisible(true);
+                    ExplorerTrackBehaviour.Instance.currentlyOpenTrackEditWindow = new TrackEditWindow(track, this);
+                    ExplorerTrackBehaviour.Instance.currentlyOpenTrackEditWindow.SetVisible(true);
                 }
 
                 if (GUILayout.Button(new GUIContent(playbackTex, "playback track"), GUIResources.ButtonStyle, GUILayout.Width(26), GUILayout.Height(26)))
                 {
 
-                    ReplayWindow window = new ReplayWindow(track);
-                    window.SetVisible(true);
+                    ExplorerTrackBehaviour.Instance.replaywindow = new ReplayWindow(track);
+                    ExplorerTrackBehaviour.Instance.replaywindow.SetVisible(true);
                 }
                 
                 GUILayout.EndHorizontal(); // END path widgets
             }
             GUILayout.EndScrollView();
+            
         }
 
 

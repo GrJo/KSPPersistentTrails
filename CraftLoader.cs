@@ -25,7 +25,7 @@ namespace PersistentTrails
                     //Debug.Log("vessel parts: " + vessel.parts.Count);
                     rootPosition = vessel.parts[0].transform.position;
                     rootRotation = vessel.parts[0].transform.rotation;
-                    Quaternion worldUp = Quaternion.Euler((vessel.rigidbody.position - vessel.mainBody.position).normalized);
+                    Quaternion worldUp = Quaternion.Euler((vessel.GetComponent<Rigidbody>().position - vessel.mainBody.position).normalized);
                     referenceFrame.position = vessel.transform.position;
                     referenceFrame.rotation = vessel.transform.rotation;
                     foreach (Part part in vessel.parts)
@@ -202,10 +202,10 @@ namespace PersistentTrails
             {
                 ghostPhysicMaterial = new PhysicMaterial("ghostPhysicMat");
                 ghostPhysicMaterial.dynamicFriction = 0.3f;
-                ghostPhysicMaterial.dynamicFriction2 = 0.3f;
+                //ghostPhysicMaterial.dynamicFriction2 = 0.3f;
                 ghostPhysicMaterial.frictionCombine = PhysicMaterialCombine.Average;
                 ghostPhysicMaterial.staticFriction = 0.3f;
-                ghostPhysicMaterial.staticFriction2 = 0.3f;
+                //ghostPhysicMaterial.staticFriction2 = 0.3f;
             }
             return ghostPhysicMaterial;
         }

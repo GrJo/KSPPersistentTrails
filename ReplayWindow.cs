@@ -191,8 +191,8 @@ namespace PersistentTrails
                 ghost = MeshFactory.makeMeshGameObject(ref sphere, "Track playback sphere");
                 ghost.transform.localScale = new Vector3(track.ConeRadiusToLineWidthFactor * track.LineWidth, track.ConeRadiusToLineWidthFactor * track.LineWidth, track.ConeRadiusToLineWidthFactor * track.LineWidth);
                 //ghost.collider.enabled = false;
-                ghost.renderer.material = new Material(Shader.Find("KSP/Emissive/Diffuse"));
-                ghost.renderer.material.SetColor("_EmissiveColor", track.LineColor);
+                ghost.GetComponent<Renderer>().material = new Material(Shader.Find("KSP/Emissive/Diffuse"));
+                ghost.GetComponent<Renderer>().material.SetColor("_EmissiveColor", track.LineColor);
             }
 
             behaviour = ghost.AddComponent<ReplayBehaviour>();

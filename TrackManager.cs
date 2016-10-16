@@ -119,13 +119,15 @@ namespace PersistentTrails
         public void Update() { 
             //check if floating origin has updated by checking reference position in Unity coords
             //Debug.Log("TrackManager Behaviour Update");
-            Vector3 newReferencePos = FlightGlobals.currentMainBody.GetWorldSurfacePosition(0, 0, 1000);
-            if ((newReferencePos - lastReferencePos).sqrMagnitude > 1.0f)
+            if (FlightGlobals.fetch != null)
             {
-                TrackManager.Instance.OnFloatingOriginUpdated();
-                lastReferencePos = newReferencePos;
+                Vector3 newReferencePos = FlightGlobals.currentMainBody.GetWorldSurfacePosition(0, 0, 1000);
+                if ((newReferencePos - lastReferencePos).sqrMagnitude > 1.0f)
+                {
+                    TrackManager.Instance.OnFloatingOriginUpdated();
+                    lastReferencePos = newReferencePos;
+                }
             }
-
             //TireRecorder.Instance.update();
 
             // --- TEST CRAFT SERIALIZE ---

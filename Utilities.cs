@@ -314,7 +314,7 @@ namespace PersistentTrails
 
     public static class GUIResources
     {
-        public static string VERSION = "v1.1";
+        public static string VERSION = "v1.4";
         //public static Texture2D IconRecording = new Texture2D(32, 32, TextureFormat.ARGB32, false);
         public static string IconRecordingPath = "PersistentTrails/Icons/Main-Recording"; //loaded via gamedatabase, no ending required
 

@@ -27,7 +27,8 @@ namespace PersistentTrails
         public Vector3 currentVelocity = Vector3.zero;
         private bool _isOffRails = false;
         private bool offRailsInitiliazed = false;
-        private OffRailsObject offRailsObject;       
+        private OffRailsObject offRailsObject;
+        private bool animationsInitialised = false;    
 
         public bool isOffRails
         {
@@ -122,6 +123,11 @@ namespace PersistentTrails
             //Debug.Log("Replay OnUpdate: evaluating track after t = " + currentReplayTime + "s, UT= " + (trackStartUT + currentReplayTime));
             double currentTimeUT = Planetarium.GetUniversalTime();
 
+            if (!animationsInitialised)
+            {
+                CraftLoader.setLightStateInChildren(ghost, false);
+                CraftLoader.setLadderStateInChildren(ghost, false);
+            }
             //increment replayTime
             currentReplayTime += playbackFactor * (currentTimeUT - lastUpdateUT);
 

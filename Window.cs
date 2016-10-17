@@ -214,7 +214,14 @@ namespace Tac
 
             if (GUI.Button(new Rect(windowPos.width - 24, 4, 20, 20), "X", closeButtonStyle))
             {
-                SetVisible(false);
+                if (GetType() == typeof(MainWindow))
+                {
+                    ExplorerTrackBehaviour.Instance.PTMenuAppLToolBar.onAppLaunchToggle();
+                }
+                else
+                {
+                    SetVisible(false);
+                }
             }
 
             var resizeRect = new Rect(windowPos.width - 16, windowPos.height - 16, 16, 16);

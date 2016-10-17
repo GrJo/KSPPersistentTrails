@@ -83,7 +83,7 @@ namespace PersistentTrails
 
         public static void LoadTexture(ref Texture2D tex, string fileName)
         {
-            if (File.Exists(PlugInDataPath + fileName))
+            if (File.Exists(PlugInIconPath + fileName))
             {
                 Debug.Log(String.Format("Loading Texture - file://{0}{1}", PlugInIconPath, fileName));
                 WWW img1 = new WWW(String.Format("file://{0}{1}", PlugInIconPath, fileName));
@@ -315,11 +315,14 @@ namespace PersistentTrails
     public static class GUIResources
     {
         public static string VERSION = "v1.4";
-        //public static Texture2D IconRecording = new Texture2D(32, 32, TextureFormat.ARGB32, false);
-        public static string IconRecordingPath = "PersistentTrails/Icons/Main-Recording"; //loaded via gamedatabase, no ending required
+        public static Texture2D IconRecording = new Texture2D(38, 38, TextureFormat.ARGB32, false);
+        public static string IconRecordingPath = "PersistentTrails/Icons/Main-RecordingAL"; //loaded via gamedatabase, no ending required
+        public static string IconRecordingPathTB = "PersistentTrails/Icons/Main-Recording";
 
-        //public static Texture2D IconNoRecording = new Texture2D(32, 32, TextureFormat.ARGB32, false);
-        public static string IconNoRecordingPath = "PersistentTrails/Icons/Main-NoRecording";
+        public static Texture2D IconNoRecording = new Texture2D(38, 38, TextureFormat.ARGB32, false);
+        public static string IconNoRecordingPath = "PersistentTrails/Icons/Main-NoRecordingAL";
+        public static string IconNoRecordingPathTB = "PersistentTrails/Icons/Main-NoRecording";
+
 
         public static GUIStyle WindowStyle;
         public static GUIStyle IconStyle;
@@ -355,8 +358,8 @@ namespace PersistentTrails
 
         public static void LoadAssets()
         {
-            //Utilities.LoadTexture(ref IconNoRecording, "Main-NoRecording.png");
-            //Utilities.LoadTexture(ref IconRecording, "Main-Recording.png");
+            Utilities.LoadTexture(ref IconNoRecording, "Main-NoRecordingAL.png");
+            Utilities.LoadTexture(ref IconRecording, "Main-RecordingAL.png");
         }
 
         public static void SetStyles()

@@ -137,36 +137,76 @@ namespace PersistentTrails
                 //Debug.Log("Part: " + pv.scale);
             }
             setColliderStateInChildren(craft, collidersOn);
-            setLightStateInChildren(craft, false);
+            //setLightStateInChildren(craft, false);
+            //setLadderStateInChildren(craft, false);
             return craft;
         }
 
         public static GameObject findPartModel(string partName)
         {
             UrlDir.UrlConfig[] cfg = GameDatabase.Instance.GetConfigs("PART");
-            //Debug.Log("looping through " + cfg.Length);
+            
             for (int i = 0; i < cfg.Length; i++)
             {
                 string modfiedPartName = partName.Replace('.', '_');
                 if (modfiedPartName == cfg[i].name)
-                {                    
-                    //Debug.Log("found this part: " + cfg[i].url);
+                {
+                    Utilities.debug.debugMessage("found this part: " + cfg[i].url);
+                    string modelpath = "";
+                    string meshname = "";
+                    cfg[i].config.TryGetValue("mesh", ref meshname);
+                    if (meshname != "")
+                    {
+                        //Utilities.debug.debugMessage("Found mesh field");
+                        int dotlocation = meshname.LastIndexOf(".");
+
+                        if (dotlocation == -1)
+                        {
+                            //no ".mu"
+                            //Utilities.debug.debugMessage("no .mu");
+                            modelpath = cfg[i].parent.parent.url + "/" + meshname;
+                        }
+                        else
+                        {
+                            //has ".mu"
+                            //Utilities.debug.debugMessage("has .mu");
+                            meshname = meshname.Substring(0, dotlocation);
+                            modelpath = cfg[i].parent.parent.url + "/" + meshname;
+                        }
+                    }
+                    else
+                    {
+                        //Utilities.debug.debugMessage("No mesh field try MODEL node");
+                        ConfigNode node = new ConfigNode();
+                        if (cfg[i].config.TryGetNode("MODEL", ref node))
+                        {
+                            //Utilities.debug.debugMessage("MODEL node found");
+                            if (node.TryGetValue("model", ref meshname))
+                            {
+                                //Debug.LogUtilities.debug.debugMessage("model field found");
+                                modelpath = meshname;
+                            }
+                        }
+                    }
                     //float scale = 0.1337f;
                     //float.TryParse(cfg[i].config.GetValue("scale"), out scale);
-                    //Debug.Log("scale: " + scale);
-                    string modelPath = cfg[i].parent.parent.url + "/" + "model";
-                    //Debug.Log("model path: " + modelPath);
-                    GameObject newModel = GameDatabase.Instance.GetModel(modelPath);
+                    //Utilities.debug.debugMessage("scale: " + scale);
+                    //string modelPath = cfg[i].parent.parent.url + "/" + "model";
+                    //string modelPath = cfg[i].parent.url;
+                    Utilities.debug.debugMessage("model path: " + modelpath);
+                    GameObject newModel = null;
+                    if (modelpath != "")
+                        newModel = GameDatabase.Instance.GetModel(modelpath);
                     if (newModel == null)
                     {
-                        //Debug.Log("model load error, fetching first model available");
+                        Utilities.debug.debugMessage("model load error, fetching first model available");
                         newModel = GameDatabase.Instance.GetModelIn(cfg[i].parent.parent.url);
                         return newModel;
                         //return new PartValue(newModel, scale);
                     }
                     else
                     {
-                        //Debug.Log("newModel not null");
+                        //Utilities.debug.debugMessage("newModel not null");
                         return newModel;
                     }
                 }
@@ -182,7 +222,8 @@ namespace PersistentTrails
             for (int i = 0; i < colliders.Length; i++)
             {
                 colliders[i].isTrigger = !newValue;
-                colliders[i].material = getPhysicMaterial();
+                if (!(colliders[i] is WheelCollider))
+                    colliders[i].material = getPhysicMaterial();
             }
         }
 
@@ -192,6 +233,26 @@ namespace PersistentTrails
             for (int i = 0; i < lights.Length; i++)
             {
                 lights[i].enabled = newValue;                
+            }
+            ModuleAnimateGeneric[] lights2 = rootObject.GetComponentsInChildren<ModuleAnimateGeneric>(true);
+            for (int i = 0; i < lights2.Length; ++i)
+            {
+                if (lights2[i].defaultActionGroup == KSPActionGroup.Light)
+                {
+                    lights2[i].Toggle();
+                }
+            }
+        }
+
+        public static void setLadderStateInChildren(GameObject rootObject, bool newValue)
+        {
+            RetractableLadder[] ladders = rootObject.GetComponentsInChildren<RetractableLadder>(true);
+            for (int i = 0; i < ladders.Length; i++)
+            {
+                if (newValue)
+                    ladders[i].Extend();
+                else
+                    ladders[i].Retract();
             }
         }
 

@@ -52,6 +52,7 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="AppLauncherToolBarExtension.cs" />
     <Compile Include="ColorPicker.cs" />
     <Compile Include="CraftLoader.cs" />
     <Compile Include="DebugMessages.cs" />
@@ -61,6 +62,7 @@
     <Compile Include="OffRailsObject.cs" />
     <Compile Include="RecordingThresholds.cs" />
     <Compile Include="ReplayWindow.cs" />
+    <Compile Include="SettingsParams.cs" />
     <Compile Include="TireTracker.cs" />
     <Compile Include="ToolBarManager.cs" />
     <Compile Include="Track.cs" />

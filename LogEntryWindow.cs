@@ -2,7 +2,7 @@
 
 namespace PersistentTrails
 {
-    class LogEntryWindow : Tac.Window<LogEntryWindow>
+    class LogEntryWindow : Window<LogEntryWindow>
     {
         private TrackManager trackManager;
         private string labelText;

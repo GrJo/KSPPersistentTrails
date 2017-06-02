@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections;
-using System.Collections.Generic;
-using System.Linq;
-using System.Reflection;
-using System.Text;
-using UnityEngine;
+﻿using System.Reflection;
 
 namespace PersistentTrails
 {
@@ -15,6 +9,7 @@ namespace PersistentTrails
         public override GameParameters.GameMode GameMode { get { return GameParameters.GameMode.ANY; } }
         public override bool HasPresets { get { return false; } }
         public override string Section { get { return "PersistentTrails"; } }
+        public override string DisplaySection { get { return "PersistentTrails"; } }
         public override int SectionOrder { get { return 1; } }
         
         [GameParameters.CustomParameterUI("Use Stock Application Launcher Icon", toolTip = "If on, the Stock Application launcher will be used,\nif off will use Blizzy Toolbar if installed")]

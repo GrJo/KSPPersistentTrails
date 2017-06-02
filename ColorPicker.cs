@@ -1,13 +1,10 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using UnityEngine;
 
 namespace PersistentTrails
 {
 
-    class ColorPicker : Tac.Window<ColorPicker>
+    class ColorPicker : Window<ColorPicker>
     {
 
         private Texture2D colorTexture;

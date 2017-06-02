@@ -1,10 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using Tac;
+﻿
 using UnityEngine;
-using UnityEngineInternal;
 
 namespace PersistentTrails
 {
@@ -127,6 +122,7 @@ namespace PersistentTrails
             {
                 CraftLoader.setLightStateInChildren(ghost, false);
                 CraftLoader.setLadderStateInChildren(ghost, false);
+                animationsInitialised = true;
             }
             //increment replayTime
             currentReplayTime += playbackFactor * (currentTimeUT - lastUpdateUT);
@@ -164,7 +160,7 @@ namespace PersistentTrails
     }
 
 
-    class ReplayWindow : Tac.Window<ReplayWindow>
+    class ReplayWindow : Window<ReplayWindow>
     {
 
         ReplayBehaviour behaviour;

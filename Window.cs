@@ -28,9 +28,8 @@
 using System;
 using KSP.UI.Dialogs;
 using UnityEngine;
-using PersistentTrails;
 
-namespace Tac
+namespace PersistentTrails
 {
     public abstract class Window<T>
     {

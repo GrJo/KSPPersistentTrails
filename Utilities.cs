@@ -259,9 +259,9 @@ namespace PersistentTrails
         public static string distanceString(float distanceMeters)
         {
             if (distanceMeters > 1000)
-                return "" + Math.Round(distanceMeters / 1000) + " km";
+                return "" + (distanceMeters/1000).ToString("F3") + " km";
             else
-                return "" + Math.Round(distanceMeters) + " m";
+                return "" + distanceMeters.ToString("F3") + " m";
 
         }
 
@@ -314,7 +314,7 @@ namespace PersistentTrails
 
     public static class GUIResources
     {
-        public static string VERSION = "v1.4";
+        public static string VERSION = "v1.5";
         public static Texture2D IconRecording = new Texture2D(38, 38, TextureFormat.ARGB32, false);
         public static string IconRecordingPath = "PersistentTrails/Icons/Main-RecordingAL"; //loaded via gamedatabase, no ending required
         public static string IconRecordingPathTB = "PersistentTrails/Icons/Main-Recording";

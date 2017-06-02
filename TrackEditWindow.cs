@@ -1,14 +1,11 @@
-﻿using System;
-using UnityEngine;
+﻿using UnityEngine;
 using System.Collections.Generic;
-using System.Text.RegularExpressions;
-using Tac;
 using System.IO;
 
 namespace PersistentTrails
 {
 
-    class TrackEditWindow : Tac.Window<TrackEditWindow>
+    class TrackEditWindow : Window<TrackEditWindow>
     {
         //private WindowResizer resizer = new WindowResizer(
         //    new Rect(350, 255, 380, 240),

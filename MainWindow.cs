@@ -1,14 +1,13 @@
 ﻿using System;
 using System.Linq;
 using UnityEngine;
-using Tac;
 using System.Collections.Generic;
 
 
 
 namespace PersistentTrails
 {
-    class MainWindow : Tac.Window<MainWindow>
+    class MainWindow : Window<MainWindow>
     {
         //private TrackManager trackManager;
         ExplorerTrackBehaviour mainBehaviour;

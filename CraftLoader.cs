@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Text;
 //using System.Threading.Tasks;
 using UnityEngine;
@@ -30,7 +29,7 @@ namespace PersistentTrails
                     referenceFrame.rotation = vessel.transform.rotation;
                     foreach (Part part in vessel.parts)
                     {
-                        if (part.name == "launchClamp1" || part.partName == "StrutConnector" || part.partName == "FuelLine")
+                        if (part.name == "launchClamp1" || part.name == "strutConnector" || part.name == "fuelLine")
                         {
                             Utilities.debug.debugMessage("Excluding part from crf file: " + part.name);                            
                         }
@@ -124,6 +123,15 @@ namespace PersistentTrails
             {
                 //Debug.Log("pv.partName is " + pv.partName);
                 pv.model.SetActive(true);
+                setLightStateInChildren(pv.model, false);
+                if (pv.partName.Contains("Ladder"))
+                {
+                    setLadderStateInChildren(pv.model, false);
+                }
+                if (pv.partName.Contains("comm") || pv.partName.Contains("Antenna"))
+                {
+                    setAntennaStateInChildren(pv.model, false);
+                }
                 //Debug.Log("pv.model exists");
                 pv.model.transform.parent = craft.transform;
                 pv.model.transform.localPosition = pv.position;
@@ -234,25 +242,64 @@ namespace PersistentTrails
             {
                 lights[i].enabled = newValue;                
             }
-            ModuleAnimateGeneric[] lights2 = rootObject.GetComponentsInChildren<ModuleAnimateGeneric>(true);
-            for (int i = 0; i < lights2.Length; ++i)
+            /*
+            Animation[] lights = rootObject.GetComponentsInChildren<Animation>(true);
+            for (int i = 0; i < lights.Length; ++i)
             {
-                if (lights2[i].defaultActionGroup == KSPActionGroup.Light)
+                Animation a = lights[i];
+                if (a["LightAnimation"] != null)
                 {
-                    lights2[i].Toggle();
+                    AnimationState animState = a["LightAnimation"];
+                    animState.normalizedTime = 1f;
+                    a.Stop();
+                    lights[i].enabled = newValue;
                 }
-            }
+            }*/
         }
 
         public static void setLadderStateInChildren(GameObject rootObject, bool newValue)
         {
-            RetractableLadder[] ladders = rootObject.GetComponentsInChildren<RetractableLadder>(true);
-            for (int i = 0; i < ladders.Length; i++)
+            Animation[] anims = rootObject.GetComponentsInChildren<Animation>(true);
+            for (int i = 0; i < anims.Length; ++i)
             {
-                if (newValue)
-                    ladders[i].Extend();
-                else
-                    ladders[i].Retract();
+                Animation a = anims[i];
+                if (a["Retract"] != null)
+                {
+                    AnimationState animState = a["Retract"];
+                    animState.speed = 0.0f;
+                    animState.normalizedTime = 0.0f;
+                    a.Stop();
+                    anims[i].enabled = newValue;
+                }
+            }
+        }
+
+        public static void setAntennaStateInChildren(GameObject rootObject, bool newValue)
+        {
+            Animation[] anims = rootObject.GetComponentsInChildren<Animation>(true);
+            for (int i = 0; i < anims.Length; ++i)
+            {
+                Animation a = anims[i];
+                AnimationState animState = null;
+                if (a["Deploy"] != null)
+                {
+                    animState = a["Deploy"];
+                }
+                if (a["dish"] != null)
+                {
+                    animState = a["dish"];
+                }
+                if (a["antenna"] != null)
+                {
+                    animState = a["antenna"];
+                }
+                if (animState != null)
+                { 
+                    animState.speed = 0.0f;
+                    animState.normalizedTime = 0.0f;
+                    a.Stop();
+                    anims[i].enabled = newValue;
+                }
             }
         }
 

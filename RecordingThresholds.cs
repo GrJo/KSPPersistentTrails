@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-
+﻿
 namespace PersistentTrails
 {
     public struct RecordingThresholds //if one of the thresholds is exceeded, a new node will be added to the path

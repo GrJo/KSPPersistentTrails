@@ -1,0 +1,27 @@
+﻿V1.5
+Changes and re-compiled for KSP 1.3
+Fixed lights and Antennas so they don't deploy for ghost vessels.
+Added 3 decimal point precision on distance readout in GUI.
+V1.4
+Fixed and re-compiled for KSP 1.2 (will not work with older versions).
+Fixed part loading for ghost vessels on playback. Parts will now load the correct parts.
+Fixed null reference exception in log when leaving Flight scene.
+Added Stock application launcher icon support. ToolBar is no longer a required dependancy, but is still supported. Change between stock icon and ToolBar via the in-game Settings Menu - Difficulty settings.
+V1.3 (JPLRepo takes over support/dev from here)
+Rebuilt for KSP 1.1.3
+V1.2 
+Update for 1.0.2.
+V1.1 
+[Release Details]: Plugin Toolbar integration, FigaroGPS support, fixes for struts, fuel lines and launch clamps for replay
+V1.0 
+[Release details] Joined forces with Snjo. Vessel geometry saving and replay, Replay looping, smart node placement.
+V0.8 
+fixed quickload bug, fixed logentry node labels not updating while GUI is hidden(F2). added tooltips and track length display
+V0.7.1 
+memleak fix and fix for orbital velocity recording
+V0.7 
+StackOverflow Exception removed, 0.2 seconds recording option, minor GUI enhancements => Beta Status
+V0.6 
+added playback function, fixed logentry label positions
+V0.5 
+initial release

@@ -35,8 +35,8 @@ namespace PersistentTrails
     public class Utilities
     {
         public static String AppPath = KSPUtil.ApplicationRootPath.Replace("\\", "/");
-        public static String PlugInDataPath = AppPath + "GameData/PersistentTrails/PluginData/";
-        public static String PlugInIconPath = AppPath + "GameData/PersistentTrails/Icons/";
+        public static String PlugInDataPath = AppPath + "GameData/REPOSoftTech/PersistentTrails/PluginData/";
+        public static String PlugInIconPath = AppPath + "GameData/REPOSoftTech/PersistentTrails/Icons/";
         public static String TrackPath = PlugInDataPath + "Tracks/";
         public static String CraftPath = PlugInDataPath + "Craft/";
         public static int craftFileFormat = 1;

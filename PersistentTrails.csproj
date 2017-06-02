@@ -93,13 +93,13 @@ set /p MONO_EXE_DIR=&lt;"$(ProjectDir)LocalDev\mono_exe.txt"
 set /p PDB2MDB_EXE_DIR=&lt;"$(ProjectDir)LocalDev\pdb2mdb_exe.txt"
 
 set /p ZA_DIR=&lt;"$(ProjectDir)LocalDev\7za_dir.txt"
-xcopy "$(TargetPath)" "$(SolutionDir)ReleasePackage\GameData\$(ProjectName)\" /Y
+xcopy "$(TargetPath)" "$(SolutionDir)ReleasePackage\GameData\REPOSoftTech\$(ProjectName)\" /Y
 
-xcopy "$(TargetDir)$(ProjectName).pdb" "$(SolutionDir)ReleasePackage\GameData\$(ProjectName)\" /Y
+xcopy "$(TargetDir)$(ProjectName).pdb" "$(SolutionDir)ReleasePackage\GameData\REPOSoftTech\$(ProjectName)\" /Y
 
 cd "$(TargetDir)"
 "%25MONO_EXE_DIR%25" "%25PDB2MDB_EXE_DIR%25" "$(TargetFileName)"
-xcopy "$(TargetDir)$(ProjectName).dll.mdb" "$(SolutionDir)ReleasePackage\GameData\$(ProjectName)\" /Y
+xcopy "$(TargetDir)$(ProjectName).dll.mdb" "$(SolutionDir)ReleasePackage\GameData\REPOSoftTech\$(ProjectName)\" /Y
 
 where /q %25ZA_DIR%25:7za.exe
 if %25ERRORLEVEL%25 == 1 (
@@ -110,7 +110,7 @@ if %25ERRORLEVEL%25 == 1 (
 if exist "$(SolutionDir)ReleasePackage\$(ProjectName)_V@(VersionNumber).zip" del "$(SolutionDir)ReleasePackage\$(ProjectName)_V@(VersionNumber).zip"
    
 %25ZA_DIR%257za.exe a -tzip -r  "$(SolutionDir)ReleasePackage\$(ProjectName)_V@(VersionNumber).zip" "$(SolutionDir)ReleasePackage\GameData"
-c:\7za\7za d -r  "$(SolutionDir)ReleasePackage\$(ProjectName)_V@(VersionNumber).zip" "*.pdb" "*.mdb"
+
 xcopy /E /Y "$(SolutionDir)ReleasePackage\GameData" "%25KSP_DIR%25\GameData"</PostBuildEvent>
   </PropertyGroup>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

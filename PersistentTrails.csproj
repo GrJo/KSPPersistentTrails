@@ -111,7 +111,7 @@ if exist "$(SolutionDir)ReleasePackage\$(ProjectName)_V@(VersionNumber).zip" del
    
 %25ZA_DIR%257za.exe a -tzip -r  "$(SolutionDir)ReleasePackage\$(ProjectName)_V@(VersionNumber).zip" "$(SolutionDir)ReleasePackage\GameData"
 
-xcopy /E /Y "$(SolutionDir)ReleasePackage\GameData" "%25KSP_DIR%25\GameData"</PostBuildEvent>
+xcopy /E /Y "$(SolutionDir)ReleasePackage\GameData" "%25KSP_DIR%25\GameData\"</PostBuildEvent>
   </PropertyGroup>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

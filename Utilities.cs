@@ -100,13 +100,21 @@ namespace PersistentTrails
         {
             if (File.Exists(PlugInIconPath + filename))
             {
-                var bytes = File.ReadAllBytes(PlugInIconPath + filename);
-                //Debug.Log("image bytes read");
-                Texture2D texture = new Texture2D(width, height, TextureFormat.ARGB32, false);
-                //Debug.Log("texture created");
-                texture.LoadImage(bytes);
-                //Debug.Log("image loaded to texture");
-                return texture;
+                try
+                {
+                    var bytes = File.ReadAllBytes(PlugInIconPath + filename);
+                    //Debug.Log("image bytes read");
+                    Texture2D texture = new Texture2D(width, height, TextureFormat.ARGB32, false);
+                    //Debug.Log("texture created");
+                    texture.LoadImage(bytes);
+                    //Debug.Log("image loaded to texture");
+                    return texture;
+                }
+                catch (Exception  e)
+                {
+                    Console.WriteLine(e);
+                }
+                
             }
             return null;
         }
@@ -314,7 +322,7 @@ namespace PersistentTrails
 
     public static class GUIResources
     {
-        public static string VERSION = "v1.5";
+        public static string VERSION = "v1.7";
         public static Texture2D IconRecording = new Texture2D(38, 38, TextureFormat.ARGB32, false);
         public static string IconRecordingPath = "PersistentTrails/Icons/Main-RecordingAL"; //loaded via gamedatabase, no ending required
         public static string IconRecordingPathTB = "PersistentTrails/Icons/Main-Recording";

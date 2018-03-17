@@ -170,6 +170,7 @@ namespace PersistentTrails
             {
                 // Show the color dialog.
                 ExplorerTrackBehaviour.Instance.colorDlg = new ColorPicker(this);
+                ExplorerTrackBehaviour.Instance.colorDlg.Awake();
                 ExplorerTrackBehaviour.Instance.colorDlg.SetVisible(true);
             }
             

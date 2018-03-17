@@ -37,30 +37,20 @@ namespace PersistentTrails
             SetResizeY(true);
 
             windowPos = new Rect(60, 60, 380, 300);
+            
+            trackColorTextures = new List<Texture2D>();
+        }
 
+        public void Awake()
+        {
             continueTex = Utilities.LoadImage("continue_icon.png", 16, 16);
             deleteTex = Utilities.LoadImage("delete_icon.png", 16, 16);
             visibleTex = Utilities.LoadImage("visible_on_icon.png", 16, 16);
             invisibleTex = Utilities.LoadImage("visible_off_icon.png", 16, 16);
             editTex = Utilities.LoadImage("edit_icon.png", 16, 16);
             playbackTex = Utilities.LoadImage("play.png", 16, 16);
-            
-            trackColorTextures = new List<Texture2D>();
         }
-
-
-
-        //protected override void DrawGUI() {
-        //    resizer.Position = GUILayout.Window(
-        //        windowId, resizer.Position, DoGUI,
-        //        "ExplorerTrack MainWindow",
-        //        resizer.LayoutMinWidth(),
-        //        resizer.LayoutMinHeight());
-
-        //    //Debug.Log("MainWindow DrawGUI()");
-            
-        //}
-
+        
         protected override void DrawWindowContents(int windowID)
         {
             GUIResources.SetupGUI();
@@ -222,6 +212,7 @@ namespace PersistentTrails
                 {
 
                     ExplorerTrackBehaviour.Instance.replaywindow = new ReplayWindow(track);
+                    ExplorerTrackBehaviour.Instance.replaywindow.Awake();
                     ExplorerTrackBehaviour.Instance.replaywindow.SetVisible(true);
                 }
                 

@@ -71,6 +71,7 @@ namespace PersistentTrails
             //DontDestroyOnLoad(this);
             Debug.Log("Awakening ExplorerTrackBehaviour");
             
+            mainWindow.Awake();
             //mainWindowOpen = false;
      
             //Load config

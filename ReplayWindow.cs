@@ -202,7 +202,11 @@ namespace PersistentTrails
             behaviour.enabled = true;
             
             this.windowPos = new Rect(600f, 50f, 300f, 100f);
+            
+        }
 
+        public void Awake()
+        {
             playTex = Utilities.LoadImage("play.png", 24, 24);
             pauseTex = Utilities.LoadImage("pause.png", 24, 24); ;
             ffTex = Utilities.LoadImage("ff2.png", 24, 24); ;

@@ -88,7 +88,7 @@ namespace PersistentTrails
             InvokeRepeating("checkGPS", 1, 1); //Cancel with CancelInvoke
 
             PTMenuAppLToolBar = new AppLauncherToolBar("PersistentTrails", "Persistent Trails",
-                "PersistentTrails/Icons/Main-NoRecording",
+                "REPOoSoftTech/PersistentTrails/Icons/Main-NoRecording",
                 ApplicationLauncher.AppScenes.FLIGHT,
                 GUIResources.IconNoRecording, GUIResources.IconNoRecording,
                 GameScenes.FLIGHT);

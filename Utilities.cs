@@ -324,12 +324,12 @@ namespace PersistentTrails
     {
         public static string VERSION = "v1.7";
         public static Texture2D IconRecording = new Texture2D(38, 38, TextureFormat.ARGB32, false);
-        public static string IconRecordingPath = "PersistentTrails/Icons/Main-RecordingAL"; //loaded via gamedatabase, no ending required
-        public static string IconRecordingPathTB = "PersistentTrails/Icons/Main-Recording";
+        public static string IconRecordingPath = "REPOSoftTech/PersistentTrails/Icons/Main-RecordingAL"; //loaded via gamedatabase, no ending required
+        public static string IconRecordingPathTB = "REPOSoftTech/PersistentTrails/Icons/Main-Recording";
 
         public static Texture2D IconNoRecording = new Texture2D(38, 38, TextureFormat.ARGB32, false);
-        public static string IconNoRecordingPath = "PersistentTrails/Icons/Main-NoRecordingAL";
-        public static string IconNoRecordingPathTB = "PersistentTrails/Icons/Main-NoRecording";
+        public static string IconNoRecordingPath = "REPOSoftTech/PersistentTrails/Icons/Main-NoRecordingAL";
+        public static string IconNoRecordingPathTB = "REPOSoftTech/PersistentTrails/Icons/Main-NoRecording";
 
 
         public static GUIStyle WindowStyle;

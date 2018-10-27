@@ -1,4 +1,9 @@
-﻿V1.6
+﻿V1.8
+Re-Compile for KSP 1.5.x
+Fixed texture path for ToolBar mod icons
+V1.7
+Fix and Re-Compile for KSP 1.4.1
+V1.6
 Re-compile for KSP 1.3.1
 V1.5
 Changes and re-compiled for KSP 1.3

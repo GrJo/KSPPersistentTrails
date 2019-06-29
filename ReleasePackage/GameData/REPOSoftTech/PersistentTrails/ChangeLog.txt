@@ -1,4 +1,7 @@
-﻿V1.8
+﻿V1.9
+Re-compile for KSP 1.7.x
+Fix vessel name apply to track name showing localization tag.
+V1.8
 Re-Compile for KSP 1.5.x
 Fixed texture path for ToolBar mod icons
 V1.7

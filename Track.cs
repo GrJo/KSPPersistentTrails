@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.IO;
+using KSP.Localization;
 using UnityEngine;
 
 namespace PersistentTrails
@@ -49,7 +50,8 @@ namespace PersistentTrails
         }
     };
 
-    public class LogEntry : Waypoint {
+    public class LogEntry : Waypoint
+    {
         public String label;
         public String description;
         public GameObject gameObject;
@@ -70,7 +72,7 @@ namespace PersistentTrails
             this.description = description;
             this.gameObject = null;
         }
-    };
+    }
 
     public class Track
     {
@@ -120,7 +122,7 @@ namespace PersistentTrails
         {
             initDefaultValues();
 
-            TrackName = FlightGlobals.ActiveVessel.vesselName;
+            TrackName = Localizer.Format(FlightGlobals.ActiveVessel.vesselName);
             VesselName = TrackName;
             //description = FlightGlobals.
             referenceBody = FlightGlobals.ActiveVessel.mainBody;

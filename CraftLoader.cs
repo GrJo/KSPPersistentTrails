@@ -4,6 +4,7 @@ using System.Text;
 //using System.Threading.Tasks;
 using UnityEngine;
 using System.IO;
+using KSP.Localization;
 
 namespace PersistentTrails
 {
@@ -68,7 +69,7 @@ namespace PersistentTrails
 
         public static void saveCraftToFile()
         {
-            StreamWriter stream = new StreamWriter(Utilities.CraftPath + FlightGlobals.ActiveVessel.vesselName + ".crf");
+            StreamWriter stream = new StreamWriter(Utilities.CraftPath + Localizer.Format(FlightGlobals.ActiveVessel.vesselName) + ".crf");
             stream.WriteLine(serialize());
             stream.Close(); 
         }

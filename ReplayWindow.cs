@@ -1,4 +1,5 @@
 ﻿
+using System.IO;
 using UnityEngine;
 
 namespace PersistentTrails
@@ -178,7 +179,15 @@ namespace PersistentTrails
             {
                 try
                 {
-                    ghost = CraftLoader.assembleCraft(Utilities.CraftPath + track.VesselName + ".crf", track.ReplayColliders); // --- add the craft file listed in the path, or selected from a menu ---
+                    string fileName = Utilities.CraftPath + track.VesselName + ".crf";
+                    if (System.IO.File.Exists(fileName))
+                    {
+                        ghost = CraftLoader.assembleCraft(Utilities.CraftPath + track.VesselName + ".crf", track.ReplayColliders); // --- add the craft file listed in the path, or selected from a menu ---
+                    }
+                    else
+                    {
+                        throw new FileNotFoundException("error loading craft from file", fileName);
+                    }
                 }
                 catch
                 {

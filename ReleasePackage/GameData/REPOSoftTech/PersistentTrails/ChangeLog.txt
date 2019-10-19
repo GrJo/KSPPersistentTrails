@@ -1,4 +1,6 @@
-﻿V1.9
+﻿V.10
+Re-compile for KSP 1.8.x
+V1.9
 Re-compile for KSP 1.7.x
 Fix vessel name apply to track name showing localization tag.
 V1.8

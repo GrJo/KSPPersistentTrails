@@ -416,12 +416,12 @@ namespace PersistentTrails
         {
             Vessel vessel = FlightGlobals.ActiveVessel;
             //check if sourceVessel has a gps receiver partModule
-            Part receiverPart = vessel.Parts.Find(t => t.name == "FigaroReceiver");
+            Part receiverPart = vessel.Parts.Find(t => t.name == "KerbalGPS");
 
             if (!receiverPart){
 
                 //Debug.Log("Found no GPSReceiver Part-aborting");
-                allowRecording = true; //Players not using FigaroGPS are unaffected
+                allowRecording = true; //Players not using KerbalGPS are unaffected
                 return true;
             }
 

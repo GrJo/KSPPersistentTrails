@@ -1,5 +1,7 @@
 ﻿V1.11
 Re-compile for KSP 1.9.x
+Removed Mini-AVC plugin. Can still use the full AVC for version checking.
+Fixed KerbalGPS checking, if this mod is installed must have GPS setup in order to record a track.
 V1.10
 Re-compile for KSP 1.8.x
 V1.9

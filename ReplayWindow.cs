@@ -1,10 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using Tac;
+﻿
+using System.IO;
 using UnityEngine;
-using UnityEngineInternal;
 
 namespace PersistentTrails
 {
@@ -27,7 +23,8 @@ namespace PersistentTrails
         public Vector3 currentVelocity = Vector3.zero;
         private bool _isOffRails = false;
         private bool offRailsInitiliazed = false;
-        private OffRailsObject offRailsObject;       
+        private OffRailsObject offRailsObject;
+        private bool animationsInitialised = false;    
 
         public bool isOffRails
         {
@@ -122,6 +119,12 @@ namespace PersistentTrails
             //Debug.Log("Replay OnUpdate: evaluating track after t = " + currentReplayTime + "s, UT= " + (trackStartUT + currentReplayTime));
             double currentTimeUT = Planetarium.GetUniversalTime();
 
+            if (!animationsInitialised)
+            {
+                CraftLoader.setLightStateInChildren(ghost, false);
+                CraftLoader.setLadderStateInChildren(ghost, false);
+                animationsInitialised = true;
+            }
             //increment replayTime
             currentReplayTime += playbackFactor * (currentTimeUT - lastUpdateUT);
 
@@ -158,7 +161,7 @@ namespace PersistentTrails
     }
 
 
-    class ReplayWindow : Tac.Window<ReplayWindow>
+    class ReplayWindow : Window<ReplayWindow>
     {
 
         ReplayBehaviour behaviour;
@@ -176,7 +179,15 @@ namespace PersistentTrails
             {
                 try
                 {
-                    ghost = CraftLoader.assembleCraft(Utilities.CraftPath + track.VesselName + ".crf", track.ReplayColliders); // --- add the craft file listed in the path, or selected from a menu ---
+                    string fileName = Utilities.CraftPath + track.VesselName + ".crf";
+                    if (System.IO.File.Exists(fileName))
+                    {
+                        ghost = CraftLoader.assembleCraft(Utilities.CraftPath + track.VesselName + ".crf", track.ReplayColliders); // --- add the craft file listed in the path, or selected from a menu ---
+                    }
+                    else
+                    {
+                        throw new FileNotFoundException("error loading craft from file", fileName);
+                    }
                 }
                 catch
                 {
@@ -191,8 +202,8 @@ namespace PersistentTrails
                 ghost = MeshFactory.makeMeshGameObject(ref sphere, "Track playback sphere");
                 ghost.transform.localScale = new Vector3(track.ConeRadiusToLineWidthFactor * track.LineWidth, track.ConeRadiusToLineWidthFactor * track.LineWidth, track.ConeRadiusToLineWidthFactor * track.LineWidth);
                 //ghost.collider.enabled = false;
-                ghost.renderer.material = new Material(Shader.Find("KSP/Emissive/Diffuse"));
-                ghost.renderer.material.SetColor("_EmissiveColor", track.LineColor);
+                ghost.GetComponent<Renderer>().material = new Material(Shader.Find("KSP/Emissive/Diffuse"));
+                ghost.GetComponent<Renderer>().material.SetColor("_EmissiveColor", track.LineColor);
             }
 
             behaviour = ghost.AddComponent<ReplayBehaviour>();
@@ -200,7 +211,11 @@ namespace PersistentTrails
             behaviour.enabled = true;
             
             this.windowPos = new Rect(600f, 50f, 300f, 100f);
+            
+        }
 
+        public void Awake()
+        {
             playTex = Utilities.LoadImage("play.png", 24, 24);
             pauseTex = Utilities.LoadImage("pause.png", 24, 24); ;
             ffTex = Utilities.LoadImage("ff2.png", 24, 24); ;

@@ -1,14 +1,11 @@
-﻿using System;
-using UnityEngine;
+﻿using UnityEngine;
 using System.Collections.Generic;
-using System.Text.RegularExpressions;
-using Tac;
 using System.IO;
 
 namespace PersistentTrails
 {
 
-    class TrackEditWindow : Tac.Window<TrackEditWindow>
+    class TrackEditWindow : Window<TrackEditWindow>
     {
         //private WindowResizer resizer = new WindowResizer(
         //    new Rect(350, 255, 380, 240),
@@ -28,6 +25,7 @@ namespace PersistentTrails
         private int selectedActionIndex;
         private float loopTime;
         private bool colliders;
+        
 
         Texture2D colorTex;
         MainWindow mainWindow;
@@ -171,9 +169,11 @@ namespace PersistentTrails
             if (GUILayout.Button(colorTex))
             {
                 // Show the color dialog.
-                ColorPicker colorDlg = new ColorPicker(this);
-                colorDlg.SetVisible(true);
+                ExplorerTrackBehaviour.Instance.colorDlg = new ColorPicker(this);
+                ExplorerTrackBehaviour.Instance.colorDlg.Awake();
+                ExplorerTrackBehaviour.Instance.colorDlg.SetVisible(true);
             }
+            
             GUILayout.EndHorizontal();
 
             GUILayout.BeginHorizontal();

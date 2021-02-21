@@ -26,12 +26,12 @@
  */
 
 using System;
+using KSP.UI.Dialogs;
 using UnityEngine;
-using PersistentTrails;
 
-namespace Tac
+namespace PersistentTrails
 {
-    abstract class Window<T>
+    public abstract class Window<T>
     {
         private string windowTitle;
         private int windowId;
@@ -80,21 +80,6 @@ namespace Tac
 
         public virtual void SetVisible(bool newValue)
         {
-            if (newValue)
-            {
-                if (!visible)
-                {
-                    RenderingManager.AddToPostDrawQueue(3, new Callback(DrawWindow));
-                }
-            }
-            else
-            {
-                if (visible)
-                {
-                    RenderingManager.RemoveFromPostDrawQueue(3, new Callback(DrawWindow));
-                }
-            }
-
             this.visible = newValue;
         }
 
@@ -169,6 +154,14 @@ namespace Tac
             }
         }
 
+        public void OnGUI()
+        {
+            if (visible)
+            {
+                DrawWindow();
+            }
+        }
+
         protected virtual void DrawWindow()
         {
             if (visible && allowedToDraw())
@@ -220,7 +213,14 @@ namespace Tac
 
             if (GUI.Button(new Rect(windowPos.width - 24, 4, 20, 20), "X", closeButtonStyle))
             {
-                SetVisible(false);
+                if (GetType() == typeof(MainWindow))
+                {
+                    ExplorerTrackBehaviour.Instance.PTMenuAppLToolBar.onAppLaunchToggle();
+                }
+                else
+                {
+                    SetVisible(false);
+                }
             }
 
             var resizeRect = new Rect(windowPos.width - 16, windowPos.height - 16, 16, 16);

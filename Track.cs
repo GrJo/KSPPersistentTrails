@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.IO;
+using KSP.Localization;
 using UnityEngine;
 
 namespace PersistentTrails
@@ -23,7 +23,7 @@ namespace PersistentTrails
             altitude = v.altitude;
 
             velocity = v.GetSrfVelocity();
-            orientation = v.rigidbody.rotation;
+            orientation = v.GetComponent<Rigidbody>().rotation;
 
             recordTime = Planetarium.GetUniversalTime();
         }
@@ -50,7 +50,8 @@ namespace PersistentTrails
         }
     };
 
-    public class LogEntry : Waypoint {
+    public class LogEntry : Waypoint
+    {
         public String label;
         public String description;
         public GameObject gameObject;
@@ -71,7 +72,7 @@ namespace PersistentTrails
             this.description = description;
             this.gameObject = null;
         }
-    };
+    }
 
     public class Track
     {
@@ -121,7 +122,7 @@ namespace PersistentTrails
         {
             initDefaultValues();
 
-            TrackName = FlightGlobals.ActiveVessel.vesselName;
+            TrackName = Localizer.Format(FlightGlobals.ActiveVessel.vesselName);
             VesselName = TrackName;
             //description = FlightGlobals.
             referenceBody = FlightGlobals.ActiveVessel.mainBody;
@@ -163,10 +164,10 @@ namespace PersistentTrails
             for (int i = 0; i < 20; ++i)
             {
                 GameObject marker = MeshFactory.makeMeshGameObject(ref directionMarkerMesh, "cone");
-                marker.renderer.material = new Material(Shader.Find("KSP/Emissive/Diffuse"));
-                marker.renderer.castShadows = false;
-                marker.renderer.receiveShadows = false;
-                marker.renderer.enabled = false;
+                marker.GetComponent<Renderer>().material = new Material(Shader.Find("KSP/Emissive/Diffuse"));
+                marker.GetComponent<Renderer>().shadowCastingMode = UnityEngine.Rendering.ShadowCastingMode.Off;
+                marker.GetComponent<Renderer>().receiveShadows = false;
+                marker.GetComponent<Renderer>().enabled = false;
 
                 directionMarkers.Add(marker);
             }
@@ -264,8 +265,8 @@ namespace PersistentTrails
                     lineRenderer = drawnPathObj.AddComponent<LineRenderer>();
 
                     lineRenderer.material = new Material(Shader.Find("KSP/Emissive/Diffuse"));
-                    lineRenderer.renderer.castShadows = false;
-                    lineRenderer.renderer.receiveShadows = false;
+                    lineRenderer.GetComponent<Renderer>().shadowCastingMode = UnityEngine.Rendering.ShadowCastingMode.Off;
+                    lineRenderer.GetComponent<Renderer>().receiveShadows = false;
 
                     //Map mode
                     //mapModeObj = new GameObject();
@@ -326,7 +327,7 @@ namespace PersistentTrails
                     }
 
                     foreach (GameObject obj in directionMarkers)
-                        obj.renderer.enabled = false;
+                        obj.GetComponent<Renderer>().enabled = false;
                 }
             }
         }
@@ -434,8 +435,8 @@ namespace PersistentTrails
 
 
                 GameObject cone = directionMarkers[i];
-                cone.renderer.enabled = true;
-                cone.renderer.material.SetColor("_EmissiveColor", LineColor);
+                cone.GetComponent<Renderer>().enabled = true;
+                cone.GetComponent<Renderer>().material.SetColor("_EmissiveColor", LineColor);
 
                 cone.transform.position = position;
                 float scale = LineWidth * this.ConeRadiusToLineWidthFactor;
@@ -456,7 +457,7 @@ namespace PersistentTrails
             {
 
                 GameObject cone = directionMarkers[i];
-                cone.renderer.enabled = false;
+                cone.GetComponent<Renderer>().enabled = false;
             }
         }
 

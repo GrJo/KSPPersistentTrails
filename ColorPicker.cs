@@ -1,13 +1,10 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using UnityEngine;
 
 namespace PersistentTrails
 {
 
-    class ColorPicker : Tac.Window<ColorPicker>
+    class ColorPicker : Window<ColorPicker>
     {
 
         private Texture2D colorTexture;
@@ -17,10 +14,8 @@ namespace PersistentTrails
         private TrackEditWindow editWindow;
 
         public ColorPicker(TrackEditWindow editWindow) : base("Color Picker") {
-            //Utilities.LoadTexture(ref colorTexture, "ColorPick.png");
-            this.colorTexture = Utilities.LoadImage("ColorPick.png", ImageWidth, ImageHeight);
-            this.editWindow = editWindow;
             
+            this.editWindow = editWindow;
             //TODO force window width and height, disallow resize
             windowPos = new Rect(350, 30, 220, 120);
             SetResizeX(false);
@@ -28,6 +23,10 @@ namespace PersistentTrails
             SetSize(250, 250);
         }
 
+        public void Awake()
+        {
+            colorTexture = Utilities.LoadImage("ColorPick.png", ImageWidth, ImageHeight);
+        }
 
         protected override void DrawWindowContents(int windowID)
         {

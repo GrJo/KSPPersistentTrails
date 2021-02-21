@@ -1,10 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Text;
 //using System.Threading.Tasks;
 using UnityEngine;
 using System.IO;
+using KSP.Localization;
 
 namespace PersistentTrails
 {
@@ -25,12 +25,12 @@ namespace PersistentTrails
                     //Debug.Log("vessel parts: " + vessel.parts.Count);
                     rootPosition = vessel.parts[0].transform.position;
                     rootRotation = vessel.parts[0].transform.rotation;
-                    Quaternion worldUp = Quaternion.Euler((vessel.rigidbody.position - vessel.mainBody.position).normalized);
+                    Quaternion worldUp = Quaternion.Euler((vessel.GetComponent<Rigidbody>().position - vessel.mainBody.position).normalized);
                     referenceFrame.position = vessel.transform.position;
                     referenceFrame.rotation = vessel.transform.rotation;
                     foreach (Part part in vessel.parts)
                     {
-                        if (part.name == "launchClamp1" || part.partName == "StrutConnector" || part.partName == "FuelLine")
+                        if (part.name == "launchClamp1" || part.name == "strutConnector" || part.name == "fuelLine")
                         {
                             Utilities.debug.debugMessage("Excluding part from crf file: " + part.name);                            
                         }
@@ -69,7 +69,7 @@ namespace PersistentTrails
 
         public static void saveCraftToFile()
         {
-            StreamWriter stream = new StreamWriter(Utilities.CraftPath + FlightGlobals.ActiveVessel.vesselName + ".crf");
+            StreamWriter stream = new StreamWriter(Utilities.CraftPath + Localizer.Format(FlightGlobals.ActiveVessel.vesselName) + ".crf");
             stream.WriteLine(serialize());
             stream.Close(); 
         }
@@ -124,6 +124,15 @@ namespace PersistentTrails
             {
                 //Debug.Log("pv.partName is " + pv.partName);
                 pv.model.SetActive(true);
+                setLightStateInChildren(pv.model, false);
+                if (pv.partName.Contains("Ladder"))
+                {
+                    setLadderStateInChildren(pv.model, false);
+                }
+                if (pv.partName.Contains("comm") || pv.partName.Contains("Antenna"))
+                {
+                    setAntennaStateInChildren(pv.model, false);
+                }
                 //Debug.Log("pv.model exists");
                 pv.model.transform.parent = craft.transform;
                 pv.model.transform.localPosition = pv.position;
@@ -137,36 +146,76 @@ namespace PersistentTrails
                 //Debug.Log("Part: " + pv.scale);
             }
             setColliderStateInChildren(craft, collidersOn);
-            setLightStateInChildren(craft, false);
+            //setLightStateInChildren(craft, false);
+            //setLadderStateInChildren(craft, false);
             return craft;
         }
 
         public static GameObject findPartModel(string partName)
         {
             UrlDir.UrlConfig[] cfg = GameDatabase.Instance.GetConfigs("PART");
-            //Debug.Log("looping through " + cfg.Length);
+            
             for (int i = 0; i < cfg.Length; i++)
             {
                 string modfiedPartName = partName.Replace('.', '_');
                 if (modfiedPartName == cfg[i].name)
-                {                    
-                    //Debug.Log("found this part: " + cfg[i].url);
+                {
+                    Utilities.debug.debugMessage("found this part: " + cfg[i].url);
+                    string modelpath = "";
+                    string meshname = "";
+                    cfg[i].config.TryGetValue("mesh", ref meshname);
+                    if (meshname != "")
+                    {
+                        //Utilities.debug.debugMessage("Found mesh field");
+                        int dotlocation = meshname.LastIndexOf(".");
+
+                        if (dotlocation == -1)
+                        {
+                            //no ".mu"
+                            //Utilities.debug.debugMessage("no .mu");
+                            modelpath = cfg[i].parent.parent.url + "/" + meshname;
+                        }
+                        else
+                        {
+                            //has ".mu"
+                            //Utilities.debug.debugMessage("has .mu");
+                            meshname = meshname.Substring(0, dotlocation);
+                            modelpath = cfg[i].parent.parent.url + "/" + meshname;
+                        }
+                    }
+                    else
+                    {
+                        //Utilities.debug.debugMessage("No mesh field try MODEL node");
+                        ConfigNode node = new ConfigNode();
+                        if (cfg[i].config.TryGetNode("MODEL", ref node))
+                        {
+                            //Utilities.debug.debugMessage("MODEL node found");
+                            if (node.TryGetValue("model", ref meshname))
+                            {
+                                //Debug.LogUtilities.debug.debugMessage("model field found");
+                                modelpath = meshname;
+                            }
+                        }
+                    }
                     //float scale = 0.1337f;
                     //float.TryParse(cfg[i].config.GetValue("scale"), out scale);
-                    //Debug.Log("scale: " + scale);
-                    string modelPath = cfg[i].parent.parent.url + "/" + "model";
-                    //Debug.Log("model path: " + modelPath);
-                    GameObject newModel = GameDatabase.Instance.GetModel(modelPath);
+                    //Utilities.debug.debugMessage("scale: " + scale);
+                    //string modelPath = cfg[i].parent.parent.url + "/" + "model";
+                    //string modelPath = cfg[i].parent.url;
+                    Utilities.debug.debugMessage("model path: " + modelpath);
+                    GameObject newModel = null;
+                    if (modelpath != "")
+                        newModel = GameDatabase.Instance.GetModel(modelpath);
                     if (newModel == null)
                     {
-                        //Debug.Log("model load error, fetching first model available");
+                        Utilities.debug.debugMessage("model load error, fetching first model available");
                         newModel = GameDatabase.Instance.GetModelIn(cfg[i].parent.parent.url);
                         return newModel;
                         //return new PartValue(newModel, scale);
                     }
                     else
                     {
-                        //Debug.Log("newModel not null");
+                        //Utilities.debug.debugMessage("newModel not null");
                         return newModel;
                     }
                 }
@@ -182,7 +231,8 @@ namespace PersistentTrails
             for (int i = 0; i < colliders.Length; i++)
             {
                 colliders[i].isTrigger = !newValue;
-                colliders[i].material = getPhysicMaterial();
+                if (!(colliders[i] is WheelCollider))
+                    colliders[i].material = getPhysicMaterial();
             }
         }
 
@@ -193,6 +243,65 @@ namespace PersistentTrails
             {
                 lights[i].enabled = newValue;                
             }
+            /*
+            Animation[] lights = rootObject.GetComponentsInChildren<Animation>(true);
+            for (int i = 0; i < lights.Length; ++i)
+            {
+                Animation a = lights[i];
+                if (a["LightAnimation"] != null)
+                {
+                    AnimationState animState = a["LightAnimation"];
+                    animState.normalizedTime = 1f;
+                    a.Stop();
+                    lights[i].enabled = newValue;
+                }
+            }*/
+        }
+
+        public static void setLadderStateInChildren(GameObject rootObject, bool newValue)
+        {
+            Animation[] anims = rootObject.GetComponentsInChildren<Animation>(true);
+            for (int i = 0; i < anims.Length; ++i)
+            {
+                Animation a = anims[i];
+                if (a["Retract"] != null)
+                {
+                    AnimationState animState = a["Retract"];
+                    animState.speed = 0.0f;
+                    animState.normalizedTime = 0.0f;
+                    a.Stop();
+                    anims[i].enabled = newValue;
+                }
+            }
+        }
+
+        public static void setAntennaStateInChildren(GameObject rootObject, bool newValue)
+        {
+            Animation[] anims = rootObject.GetComponentsInChildren<Animation>(true);
+            for (int i = 0; i < anims.Length; ++i)
+            {
+                Animation a = anims[i];
+                AnimationState animState = null;
+                if (a["Deploy"] != null)
+                {
+                    animState = a["Deploy"];
+                }
+                if (a["dish"] != null)
+                {
+                    animState = a["dish"];
+                }
+                if (a["antenna"] != null)
+                {
+                    animState = a["antenna"];
+                }
+                if (animState != null)
+                { 
+                    animState.speed = 0.0f;
+                    animState.normalizedTime = 0.0f;
+                    a.Stop();
+                    anims[i].enabled = newValue;
+                }
+            }
         }
 
         private static PhysicMaterial ghostPhysicMaterial;
@@ -202,10 +311,10 @@ namespace PersistentTrails
             {
                 ghostPhysicMaterial = new PhysicMaterial("ghostPhysicMat");
                 ghostPhysicMaterial.dynamicFriction = 0.3f;
-                ghostPhysicMaterial.dynamicFriction2 = 0.3f;
+                //ghostPhysicMaterial.dynamicFriction2 = 0.3f;
                 ghostPhysicMaterial.frictionCombine = PhysicMaterialCombine.Average;
                 ghostPhysicMaterial.staticFriction = 0.3f;
-                ghostPhysicMaterial.staticFriction2 = 0.3f;
+                //ghostPhysicMaterial.staticFriction2 = 0.3f;
             }
             return ghostPhysicMaterial;
         }
